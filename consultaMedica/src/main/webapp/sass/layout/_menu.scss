@@ -37,12 +37,7 @@
         padding-bottom: 120px;
 
         > li {
-          > a {
-            &:hover {
-              background-color: $menuitemHoverBgColor;
-            }
-          }
-
+          
           > ul {
             border-left: 4px solid transparent;
           }
@@ -62,6 +57,7 @@
                 background-color: $menuitemActiveColor;
               }
             }
+            
 
             > ul {
               border-left-width: 4px;

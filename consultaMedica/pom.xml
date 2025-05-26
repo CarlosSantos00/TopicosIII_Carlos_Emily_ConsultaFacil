@@ -20,6 +20,12 @@
             <scope>provided</scope>
         </dependency>
         
+         <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.15.2.0</version>
+    </dependency>
+        
         <!-- https://mvnrepository.com/artifact/org.primefaces/primefaces -->
         <dependency>
             <groupId>org.primefaces</groupId>

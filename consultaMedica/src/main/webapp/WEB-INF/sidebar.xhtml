@@ -7,18 +7,22 @@
     xmlns:pm="http://primefaces.org/manhattan">
 
     <div class="layout-sidebar">
-        <div class="layout-sidebar-logo">            
-            <a href="#" id="layout-sidebar-anchor" class="layout-sidebar-anchor" title="Toggle Menu">
-                <i class="pi"/>
-            </a>
+        <div class="layout-sidebar-logo">
+            <h:graphicImage name="images/login/login.png" alt="Logo" />
         </div>
 
         <div class="layout-menu-container">
             <h:form id="menuform">
                 <pm:menu widgetVar="ManhattanMenuWidget">
-                    <p:menuitem id="mnuPessoa" value="Pessoa" icon="pi pi-fw pi-home" outcome="/admin/pessoa.xhtml"/>
-                    <p:menuitem id="mnuCidade" value="Cidade" icon="pi pi-fw pi-home" outcome="/admin/cidade.xhtml"/>
-                    <p:menuitem id="mnuSair" value="Sair" action="#{loginController.logout()}" icon="pi pi-fw pi-sign-out"  />
+                    <p:submenu label="Gerenciamento" icon="pi pi-cog">
+                        <p:menuitem id="mnuPacientes" value="Gerenciamento de Pacientes" icon="pi pi-users"/>
+                        <p:menuitem id="mnuUsuarios" value="Gerenciamento de Usuários" icon="pi pi-user" outcome="/admin/usuarios.xhtml" />
+                        
+                    </p:submenu>
+                    <p:submenu label="Consultas" icon="pi pi-cog">                    
+                        <p:menuitem id="mnuAgendamento" value="Agendamento de Consultas" icon="pi pi-calendar" />
+                        <p:menuitem id="mnuConsultas" value="Histórico de consultas" icon="pi pi-calendar" />
+                    </p:submenu> 
                 </pm:menu>
             </h:form>
         </div>

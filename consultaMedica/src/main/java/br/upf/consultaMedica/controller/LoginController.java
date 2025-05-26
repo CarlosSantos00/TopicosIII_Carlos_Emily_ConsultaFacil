@@ -1,6 +1,11 @@
 package br.upf.consultaMedica.controller;
 
+import br.upf.consultaMedica.entity.UsuarioEntity;
+import br.upf.consultaMedica.facade.UsuarioFacade;
 import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
@@ -9,23 +14,32 @@ import java.io.Serializable;
 @ViewScoped
 public class LoginController implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private Pessoa pessoa;
+
+    @EJB
+    private UsuarioFacade usuarioFacade;
 
     @PostConstruct
     public void init() {
         pessoa = new Pessoa();
-        // Valores chumbados
-        pessoa.setEmail("admin@empresa.com");
-        pessoa.setSenha("123456");
+        // valores iniciais podem ser vazios
+        pessoa.setEmail("");
+        pessoa.setSenha("");
     }
 
     public String validarLogin() {
-        // Exemplo simples: só para ilustrar a ação do botão
-        if ("admin@empresa.com".equals(pessoa.getEmail()) && "123456".equals(pessoa.getSenha())) {
-            return "home.xhtml?faces-redirect=true"; // Redireciona para home.xhtml (exemplo)
+        UsuarioEntity usuario = usuarioFacade.buscarPorEmailESenha(pessoa.getEmail(), pessoa.getSenha());
+
+        if (usuario != null && usuario.getCod() != null) {
+            // Login válido, redireciona para home.xhtml
+            return "/admin/home.xhtml?faces-redirect=true";
         } else {
-            // Implementar mensagem de erro no growl aqui
-            return null; // Fica na mesma página
+            // Login inválido, mensagem de erro
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login ou senha inválidos", null));
+            return null; // fica na mesma página
         }
     }
 
@@ -39,15 +53,23 @@ public class LoginController implements Serializable {
         this.pessoa = pessoa;
     }
 
-    // Classe interna para simplificar (ou crie em arquivo separado)
+    // Classe interna para simplificar (ou criar em arquivo separado)
     public static class Pessoa implements Serializable {
         private String email;
         private String senha;
 
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
+        public String getEmail() {
+            return email;
+        }
+        public void setEmail(String email) {
+            this.email = email;
+        }
 
-        public String getSenha() { return senha; }
-        public void setSenha(String senha) { this.senha = senha; }
+        public String getSenha() {
+            return senha;
+        }
+        public void setSenha(String senha) {
+            this.senha = senha;
+        }
     }
 }

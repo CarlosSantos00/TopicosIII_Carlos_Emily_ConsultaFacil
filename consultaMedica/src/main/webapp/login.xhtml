@@ -120,8 +120,10 @@
                                  placeholder="Senha"/>
                 </div>
                 <div class="button-container">                            
-                    <p:commandButton id="btnLogar" value="Acessar" update="@form"
-                                     action="#{loginController.validarLogin()}" styleClass="ui-button-success" />
+                    <p:commandButton id="btnLogar" value="Acessar" update=":CreateForm:growl" 
+                        action="#{loginController.validarLogin()}" 
+                        process="@form"
+                        styleClass="ui-button-success" />
                 </div>
             </div>
         </div>           

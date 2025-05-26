@@ -15,16 +15,14 @@
                 <p:growl id="growl" showDetail="true" />
                 <p:fieldset toggleable="true">
                     <p:dataTable id="datalist" value="#{usuarioController.usuarioList}" var="item"   
-                                 selectionMode="single" selection="#{usuarioController.selected}"
-                                 widgetVar="datalistPessoaWidgetVar"
-                                 rowKey="#{item.cod}"
-                                 paginator="true"
-                                 rows="5"
-                                 rowsPerPageTemplate="5,10,50,100"
-                                 emptyMessage="Nenhuma pessoa cadastrada..."
-                                 >
-                        <!--Ação AJAX para atualizar somente os botões definidos em update -->
-                        <!--quando selecionado ou não -->
+                       selectionMode="single" selection="#{usuarioController.selected}"
+                       widgetVar="datalistPessoaWidgetVar"
+                       rowKey="#{item.cod}"
+                        paginator="true"
+                        paginatorPosition="bottom"
+                        rows="5"
+                        rowsPerPageTemplate="5,10,50,100"
+                        emptyMessage="Nenhuma pessoa cadastrada...">
                         <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
 
@@ -97,6 +95,13 @@
                             </f:facet>
                             <h:outputText value="#{item.idEspecialidade.descricao}"/>
                         </p:column>
+                        
+                        <p:column width="10%" sortBy="#{item.crm}" filterBy="#{item.crm}">
+                            <f:facet name="header">
+                                <h:outputText value="CRM"/>
+                            </f:facet>
+                            <h:outputText value="#{item.crm}"/>
+                        </p:column>
 
                         <p:column width="8%" sortBy="#{item.observacao}" filterBy="#{item.observacao}">
                             <f:facet name="header">
@@ -104,6 +109,7 @@
                             </f:facet>
                             <h:outputText value="#{item.observacao}"/>
                         </p:column>
+                        
 
                         <f:facet name="footer">
                             <!--Botão utilizado para abrir a modal de criação -->
@@ -200,6 +206,11 @@
                                        itemValue="#{idEspecialidade}"
                                        itemLabel="#{idEspecialidade.nome}"/>
                     </p:selectOneMenu>
+                     
+                    <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
+                    <p:inputText id="iptCrm" size="40" label="CRM" required="true"  
+                                 value="#{usuarioController.usuario.crm}" maxlength="50" >                     
+                    </p:inputText>
 
                     <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
                     <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
@@ -283,6 +294,11 @@
                                        itemValue="#{idEspecialidade}"
                                        itemLabel="#{idEspecialidade.nome}"/>
                     </p:selectOneMenu>
+                     
+                     <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
+                    <p:inputText id="iptCrm" size="40" label="CRM" required="true"  
+                                 value="#{usuarioController.usuario.crm}" maxlength="50" >                     
+                    </p:inputText>
 
                     <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
                     <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
@@ -327,6 +343,9 @@
                     
                     <p:outputLabel value="Especialidade "/>
                     <p:outputLabel value="#{usuarioController.selected.idEspecialidade.nome}" />
+                    
+                    <p:outputLabel value="CRM "/>
+                    <p:outputLabel value="#{usuarioController.selected.crm}" />
 
 
                     <p:outputLabel value="Obervação:  "/>

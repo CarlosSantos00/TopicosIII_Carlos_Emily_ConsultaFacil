@@ -36,6 +36,9 @@ public class UsuarioEntity implements Serializable {
 
     @Column(name = "OBSERVACAO")
     private String observacao;
+    
+    @Column(name = "CRM")
+    private String crm;
 
     @NotNull
     @Column(name = "SENHA")
@@ -78,6 +81,14 @@ public class UsuarioEntity implements Serializable {
 
     public Date getDtaNascimento() {
         return dtaNascimento;
+    }
+    
+    public String getCrm() {
+        return crm;
+    }
+
+    public void setCrm(String crm) {
+        this.crm = crm;
     }
 
     public void setDtaNascimento(Date dtaNascimento) {

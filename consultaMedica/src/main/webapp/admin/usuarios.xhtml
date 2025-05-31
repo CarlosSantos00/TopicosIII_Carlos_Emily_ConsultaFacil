@@ -26,21 +26,6 @@
                         <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
 
-                        <p:column width="4%" sortBy="#{item.cod}" filterBy="#{item.cod}">
-                            <f:facet name="header">
-                                <h:outputText value="ID"/>
-                            </f:facet>
-                            <h:outputText value="#{item.cod}"/>
-                        </p:column>
-
-                        <p:column width="6%" sortBy="#{item.dtaRegistro}" filterBy="#{item.dtaRegistro}">
-                            <f:facet name="header">
-                                <h:outputText value="Registro"/>
-                            </f:facet>
-                            <h:outputText value="#{item.dtaRegistro}">
-                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
-                            </h:outputText>
-                        </p:column>
 
                         <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
                             <f:facet name="header">
@@ -49,27 +34,13 @@
                             <h:outputText value="#{item.nome}"/>
                         </p:column>
 
-                        <p:column width="6%" sortBy="#{item.dtaNascimento}" filterBy="#{item.dtaNascimento}">
-                            <f:facet name="header">
-                                <h:outputText value="Nascimento"/>
-                            </f:facet>
-                            <h:outputText value="#{item.dtaNascimento}">
-                                <f:convertDateTime pattern="dd/MM/yyyy"  />
-                            </h:outputText>
-                        </p:column>
+                        
 
                         <p:column width="8%" sortBy="#{item.email}" filterBy="#{item.email}">
                             <f:facet name="header">
                                 <h:outputText value="Email"/>
                             </f:facet>
                             <h:outputText value="#{item.email}"/>
-                        </p:column>
-
-                        <p:column width="5%" sortBy="#{item.idCidade}" filterBy="#{item.idCidade}">
-                            <f:facet name="header">
-                                <h:outputText value="Cidadania"/>
-                            </f:facet>
-                            <h:outputText value="#{item.idCidade}"/>
                         </p:column>
 
                         <p:column width="12%" sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
@@ -192,19 +163,21 @@
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
                         <f:selectItem itemLabel="Selecione uma função..."/>                        
                         <f:selectItems value="#{funcaoController.funcaoAll()}"
-                                       var="idCidadeItem"
-                                       itemValue="#{idfuncao}"
-                                       itemLabel="#{idfuncao.nome}"/>
+               var="funcaoItem"
+               itemValue="#{funcaoItem}"
+               itemLabel="#{funcaoItem.descricao}" />
+
                     </p:selectOneMenu>
+                   
                     
                      <p:outputLabel value="Especialidade " for="idEspecialidade" />
                     <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.usuario.idEspecialidade}" 
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
                         <f:selectItem itemLabel="Selecione uma especialidade..."/>                        
                         <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="idCidadeItem"
-                                       itemValue="#{idEspecialidade}"
-                                       itemLabel="#{idEspecialidade.nome}"/>
+                                       var="epecialidadeItem"
+                                       itemValue="#{epecialidadeItem}"
+                                       itemLabel="#{epecialidadeItem.descricao}"/>
                     </p:selectOneMenu>
                      
                     <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
@@ -280,9 +253,9 @@
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
                         <f:selectItem itemLabel="Selecione uma função..."/>                        
                         <f:selectItems value="#{funcaoController.funcaoAll()}"
-                                       var="idCidadeItem"
+                                       var="idfuncao"
                                        itemValue="#{idfuncao}"
-                                       itemLabel="#{idfuncao.nome}"/>
+                                       itemLabel="#{idfuncao.descricao}"/>
                     </p:selectOneMenu>
                     
                      <p:outputLabel value="Especialidade " for="idEspecialidade" />
@@ -290,9 +263,9 @@
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
                         <f:selectItem itemLabel="Selecione uma especialidade..."/>                        
                         <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="idCidadeItem"
+                                       var="idEspecialidade"
                                        itemValue="#{idEspecialidade}"
-                                       itemLabel="#{idEspecialidade.nome}"/>
+                                       itemLabel="#{idEspecialidade.descricao}"/>
                     </p:selectOneMenu>
                      
                      <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>

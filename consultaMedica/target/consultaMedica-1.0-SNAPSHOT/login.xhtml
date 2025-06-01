@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <f:facet name="first">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+    </f:facet>
+    <title>Consulta Fácil</title>
+
+    <style>
+               .login-body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 15s infinite alternate;
+            z-index: 0;
+        }
+        
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .login-panel {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            width: 100%;
+            max-width: 960px;
+            overflow: hidden;
+        }
+
+        .left-side {
+            width: 70%;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-image {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+
+        .right-side {
+            width: 65%;
+            padding: 2rem;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container h2,
+        .container h3 {
+            margin: 0 0 1rem 0;
+            color: #00897b;
+        }
+
+        .input-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .ui-inputtext,
+        .ui-password {
+            height: 2.75rem;
+            font-size: 1rem;
+        }
+
+        .button-container {
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .login-panel {
+                flex-direction: column;
+            }
+
+            .left-side {
+                display: none;
+            }
+
+            .right-side {
+                width: 100%;
+            }
+        }
+        .footer-links {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .footer-links a {
+            color: #00897b;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #00695c;
+            text-decoration: underline;
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+         .button-container {
+            margin-top: 0.5rem;
+        }
+        
+       .ui-button-success {
+        background-color: #00897b !important;
+        border: none !important;
+        color: white !important;
+        width: 100px;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 105, 92, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .ui-button-success:hover {
+        background-color: #009688 !important;
+        box-shadow: 0 4px 10px rgba(0, 105, 92, 0.4);
+    }
+   
+    .ui-button-success::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0) 45%, 
+            rgba(255,255,255,0.3) 48%, 
+            rgba(255,255,255,0.3) 52%, 
+            rgba(255,255,255,0) 55%, 
+            rgba(255,255,255,0) 100%
+            );
+        transform: rotate(30deg);
+        animation: shine 3s infinite;
+        }
+    </style>
+</h:head>
+
+<h:body styleClass="login-body">
+    <h:form id="CreateForm">
+        <p:growl id="growl" showDetail="true" />
+        <div class="login-panel">
+            <div class="left-side">
+                <p:graphicImage name="images/login/login.png" library="manhattan-layout" class="login-image floating" />
+            </div>
+            <div class="right-side ui-fluid">
+                <div class="container">
+                    <h3>Bem-vindo</h3>
+                    <h2>Consulta Fácil!</h2>
+                </div>
+                <div class="input-wrapper ui-input-icon-left">
+                    <i class="pi pi-user"/>
+                    <p:inputText id="email" value="#{loginController.pessoa.email}" 
+                                 autocomplete="off" 
+                                 required="true" requiredMessage="O Email é obrigatório!" 
+                                 placeholder="E-mail"/>
+                </div>
+                <div class="input-wrapper ui-input-icon-left">
+                    <i class="pi pi-lock"/>
+                    <p:password id="senha" value="#{loginController.pessoa.senha}" 
+                                 autocomplete="off" 
+                                 required="true" requiredMessage="A senha é obrigatória!" 
+                                 placeholder="Senha"/>
+                </div>
+                <div class="button-container">                            
+                    <p:commandButton id="btnLogar" value="Acessar" update=":CreateForm:growl" 
+                        action="#{loginController.validarLogin()}" 
+                        process="@form"
+                        styleClass="ui-button-success" />
+                </div>
+                <div class="footer-links">
+                    <p>Sistema de gerenciamento de pacientes e agendamentos • <a href="#">Precisa de ajuda?</a></p>
+                </div>
+            </div>
+        </div>           
+    </h:form>
+</h:body>
+
+<h:outputStylesheet name="css/primeicons.css" library="manhattan-layout"/>
+<h:outputStylesheet name="css/primeflex.min.css" library="manhattan-layout"/>
+<h:outputStylesheet name="css/layout-cyan-deeporange.css" library="manhattan-layout" />
+
+</html>

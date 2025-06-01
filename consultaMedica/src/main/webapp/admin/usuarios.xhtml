@@ -26,7 +26,6 @@
                         <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
 
-
                         <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Nome"/>
@@ -34,13 +33,18 @@
                             <h:outputText value="#{item.nome}"/>
                         </p:column>
 
-                        
-
                         <p:column width="8%" sortBy="#{item.email}" filterBy="#{item.email}">
                             <f:facet name="header">
                                 <h:outputText value="Email"/>
                             </f:facet>
                             <h:outputText value="#{item.email}"/>
+                        </p:column>
+                        
+                        <p:column width="8%" sortBy="#{item.contato}" filterBy="#{item.contato}">
+                            <f:facet name="header">
+                                <h:outputText value="Contato"/>
+                            </f:facet>
+                            <h:outputText value="#{item.contato}"/>
                         </p:column>
 
                         <p:column width="12%" sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
@@ -64,7 +68,7 @@
                             <f:facet name="header">
                                 <h:outputText value="Especialidade"/>
                             </f:facet>
-                            <h:outputText value="#{item.idEspecialidade.descricao}"/>
+                            <h:outputText value="#{item.idEspecialidade != null ? item.idEspecialidade.descricao : ''}"/>
                         </p:column>
                         
                         <p:column width="10%" sortBy="#{item.crm}" filterBy="#{item.crm}">
@@ -83,18 +87,15 @@
                         
 
                         <f:facet name="footer">
-                            <!--Botão utilizado para abrir a modal de criação -->
                             <p:commandButton id="btnCreate" value="Incluir Pessoa"  icon="pi pi-file" 
                                              actionListener="#{usuarioController.prepareAdicionar()}"
                                              update=":CreateForm"
                                              onclick="PF('dlgCreate').show()"/>  
 
-                            <!--Botão utilizado para abrir a modal de edição -->
                             <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Pessoa" 
                                              update="formEdit" oncomplete="PF('dlgEdit').show()" 
                                              disabled="#{empty usuarioController.selected}"/>
 
-                            <!--Botão utilizado para excluir o registro selecionado-->                            
                             <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Pessoa" 
                                              actionListener="#{usuarioController.deletarUsuario()}" update="frmList" 
                                              disabled="#{empty usuarioController.selected}">
@@ -102,7 +103,6 @@
                                            icon="ui-icon-alert"  />
                             </p:commandButton>
 
-                            <!--Botão utilizado para abrir a modal de visualização -->
                             <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Pessoa" 
                                              update="formView" oncomplete="PF('dlgView').show()" 
                                              disabled="#{empty usuarioController.selected}"/>
@@ -110,7 +110,6 @@
                         </f:facet>
                     </p:dataTable>
                 </p:fieldset>
-                <!--Diálogo para confirmação da exclusão -->
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                     <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
                     <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
@@ -140,17 +139,24 @@
                                  value="#{usuarioController.usuario.email}" maxlength="50" >
                         <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
                     </p:inputText>
+                   
                     
                     <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
                     <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
                                  requiredMessage="O atributo senha é obrigatório"
-                                 value="#{usuarioController.usuario.senha}" />              
+                                 value="#{usuarioController.usuario.senha}" />
+                    
+                     <p:outputLabel id="oplContato" value="Contato" for="iptContato"/>
+                    <p:inputMask id="iptContato" size="40" label="Contato" required="true"
+             requiredMessage="O atributo contato é obrigatório"
+             mask="(99) 9 9999-9999"
+             value="#{usuarioController.usuario.contato}" />
 
                     <p:outputLabel value="Cidade: " for="idCidade" />
                     <p:selectOneMenu id="idCidade" value="#{usuarioController.usuario.idCidade}" 
-                                     required="false" requiredMessage="O atributo cidade é obrigatório!"
+                                     required="true" requiredMessage="O atributo cidade é obrigatório!"
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma cidade..."/>                        
+                        <f:selectItem itemLabel="Selecione uma cidade..." itemValue="#{null}"/>                        
                         <f:selectItems value="#{cidadeController.cidadeAll()}"
                                        var="idCidadeItem"
                                        itemValue="#{idCidadeItem}"
@@ -159,9 +165,9 @@
                     
                     <p:outputLabel value="Função " for="idfuncao" />
                     <p:selectOneMenu id="idfuncao" value="#{usuarioController.usuario.idFuncao}" 
-                                     required="false" requiredMessage="O atributo função é obrigatório!"
+                                     required="true" requiredMessage="O atributo função é obrigatório!"
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma função..."/>                        
+                        <f:selectItem itemLabel="Selecione uma função..." itemValue="#{null}"/>                        
                         <f:selectItems value="#{funcaoController.funcaoAll()}"
                var="funcaoItem"
                itemValue="#{funcaoItem}"
@@ -173,15 +179,15 @@
                      <p:outputLabel value="Especialidade " for="idEspecialidade" />
                     <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.usuario.idEspecialidade}" 
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma especialidade..."/>                        
+                        <f:selectItem itemLabel="Selecione uma especialidade..." itemValue="#{null}"/>                        
                         <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="epecialidadeItem"
-                                       itemValue="#{epecialidadeItem}"
-                                       itemLabel="#{epecialidadeItem.descricao}"/>
+                                       var="especialidadeItem"
+                                       itemValue="#{especialidadeItem}"
+                                       itemLabel="#{especialidadeItem.descricao}"/>
                     </p:selectOneMenu>
                      
                     <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
-                    <p:inputText id="iptCrm" size="40" label="CRM" required="true"  
+                    <p:inputText id="iptCrm" size="40" label="CRM" required="false"  
                                  value="#{usuarioController.usuario.crm}" maxlength="50" >                     
                     </p:inputText>
 
@@ -194,7 +200,7 @@
                 <p:commandButton actionListener="#{usuarioController.adicionarUsuario()}" 
                                  icon="pi pi-save" value="Cadastrar" 
                                  update=":frmList, CreateForm" 
-                                onclick="dlgCreate.hide()"/>
+                                onclick="PF('dlgCreate').hide()"/>
                     
             </h:form>
         </p:dialog>
@@ -229,6 +235,12 @@
                                  value="#{usuarioController.selected.email}" maxlength="50" >
                         <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
                     </p:inputText>
+                    
+                    <p:outputLabel id="oplContato" value="Contato" for="iptContato"/>
+                    <p:inputMask id="iptContato" size="40" label="Contato" required="true"
+             requiredMessage="O atributo contato é obrigatório"
+             mask="(99) 9 9999-9999"
+             value="#{usuarioController.selected.contato}" />
 
                     <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
                     <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
@@ -238,9 +250,9 @@
                     
                     <p:outputLabel value="Cidade: " for="idCidade" />
                     <p:selectOneMenu id="idCidade" value="#{usuarioController.selected.idCidade}" 
-                                     required="false" requiredMessage="O atributo cidade é obrigatório!"
+                                     required="true" requiredMessage="O atributo cidade é obrigatório!"
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma cidade..."/>                        
+                        <f:selectItem itemLabel="Selecione uma cidade..." itemValue="#{null}"/>                        
                         <f:selectItems value="#{cidadeController.cidadeAll()}"
                                        var="idCidadeItem"
                                        itemValue="#{idCidadeItem}"
@@ -248,29 +260,29 @@
                     </p:selectOneMenu>
                     
                      <p:outputLabel value="Função " for="idfuncao" />
-                    <p:selectOneMenu id="idfuncao" value="#{usuarioController.usuario.idFuncao}" 
-                                     required="false" requiredMessage="O atributo função é obrigatório!"
+                    <p:selectOneMenu id="idfuncao" value="#{usuarioController.selected.idFuncao}" 
+                                     required="true" requiredMessage="O atributo função é obrigatório!"
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma função..."/>                        
+                        <f:selectItem itemLabel="Selecione uma função..." itemValue="#{null}"/>                        
                         <f:selectItems value="#{funcaoController.funcaoAll()}"
-                                       var="idfuncao"
-                                       itemValue="#{idfuncao}"
-                                       itemLabel="#{idfuncao.descricao}"/>
+                                       var="funcaoItem"
+                                       itemValue="#{funcaoItem}"
+                                       itemLabel="#{funcaoItem.descricao}"/>
                     </p:selectOneMenu>
                     
                      <p:outputLabel value="Especialidade " for="idEspecialidade" />
-                    <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.usuario.idEspecialidade}" 
+                    <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.selected.idEspecialidade}" 
                                      panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma especialidade..."/>                        
+                        <f:selectItem itemLabel="Selecione uma especialidade..." itemValue="#{null}"/>                        
                         <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="idEspecialidade"
-                                       itemValue="#{idEspecialidade}"
-                                       itemLabel="#{idEspecialidade.descricao}"/>
+                                       var="especialidadeItem"
+                                       itemValue="#{especialidadeItem}"
+                                       itemLabel="#{especialidadeItem.descricao}"/>
                     </p:selectOneMenu>
                      
                      <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
-                    <p:inputText id="iptCrm" size="40" label="CRM" required="true"  
-                                 value="#{usuarioController.usuario.crm}" maxlength="50" >                     
+                    <p:inputText id="iptCrm" size="40" label="CRM" required="false"  
+                                 value="#{usuarioController.selected.crm}" maxlength="50" >                     
                     </p:inputText>
 
                     <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
@@ -279,7 +291,7 @@
 
                 </h:panelGrid>   
                 <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
-                                 onclick="dlgEdit.hide()" icon="pi pi-save"
+                                 onclick="PF('dlgEdit').hide()" icon="pi pi-save"
                                  action="#{usuarioController.editarUsuario()}" />
             </h:form>
         </p:dialog>
@@ -307,6 +319,9 @@
                     <p:outputLabel value="Email: " />                    
                     <p:outputLabel value="#{usuarioController.selected.email}" />
                     
+                    <p:outputLabel value="Contato " />                    
+                    <p:outputLabel value="#{usuarioController.selected.contato}" />
+                    
                     <p:outputLabel value="Cidade: "/>
                     <p:outputLabel value="#{usuarioController.selected.idCidade.nome}" />
                     
@@ -315,7 +330,7 @@
 
                     
                     <p:outputLabel value="Especialidade "/>
-                    <p:outputLabel value="#{usuarioController.selected.idEspecialidade.nome}" />
+                    <p:outputLabel value="#{usuarioController.selected.idEspecialidade != null ? usuarioController.selected.idEspecialidade.descricao : 'Não informado'}" />
                     
                     <p:outputLabel value="CRM "/>
                     <p:outputLabel value="#{usuarioController.selected.crm}" />
@@ -330,5 +345,3 @@
     </ui:define>
 
 </ui:composition>
-
-

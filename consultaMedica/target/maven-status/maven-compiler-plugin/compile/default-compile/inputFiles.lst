@@ -1,9 +1,12 @@
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\CidadeFacade.java
+C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\PacienteController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\entity\FuncaoEntity.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\EspecialidadeController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\CidadeController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\UsuarioFacade.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\entity\CidadeEntity.java
+C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\entity\PacienteEntity.java
+C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\PacienteFacade.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\AbstractFacade.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\entity\EspecialidadeEntity.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\LoginController.java

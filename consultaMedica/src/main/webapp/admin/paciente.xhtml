@@ -6,7 +6,7 @@
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">
-        <h:outputText value="Usuarios"></h:outputText>
+        <h:outputText value="Pacientes"></h:outputText>
     </ui:define>
 
     <ui:define name="content">
@@ -14,334 +14,283 @@
             <h:panelGroup id="pngList"> 
                 <p:growl id="growl" showDetail="true" />
                 <p:fieldset toggleable="true">
-                    <p:dataTable id="datalist" value="#{usuarioController.usuarioList}" var="item"   
-                       selectionMode="single" selection="#{usuarioController.selected}"
-                       widgetVar="datalistPessoaWidgetVar"
-                       rowKey="#{item.cod}"
+                    <p:dataTable id="datalist" value="#{pacienteController.pacienteList}" var="item"   
+                       selectionMode="single" selection="#{pacienteController.selected}"
+                       widgetVar="datalistPacienteWidgetVar"
+                       rowKey="#{item.id}"
                         paginator="true"
                         paginatorPosition="bottom"
                         rows="5"
                         rowsPerPageTemplate="5,10,50,100"
-                        emptyMessage="Nenhuma pessoa cadastrada...">
-                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
-                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+                        emptyMessage="Nenhum paciente cadastrado...">
+                       
 
-                        <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                        <p:column width="15%" sortBy="#{item.nome}" filterBy="#{item.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Nome"/>
                             </f:facet>
                             <h:outputText value="#{item.nome}"/>
                         </p:column>
 
-                        <p:column width="8%" sortBy="#{item.email}" filterBy="#{item.email}">
+                        <p:column width="10%" sortBy="#{item.cpf}" filterBy="#{item.cpf}">
+                            <f:facet name="header">
+                                <h:outputText value="CPF"/>
+                            </f:facet>
+                            <h:outputText value="#{item.cpf}"/>
+                        </p:column>
+                        
+                        <p:column width="10%" sortBy="#{item.dataNascimento}" filterBy="#{item.dataNascimento}">
+                            <f:facet name="header">
+                                <h:outputText value="Nascimento"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataNascimento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.sexo}" filterBy="#{item.sexo}">
+                            <f:facet name="header">
+                                <h:outputText value="Sexo"/>
+                            </f:facet>
+                            <h:outputText value="#{item.sexo}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.celular}" filterBy="#{item.celular}">
+                            <f:facet name="header">
+                                <h:outputText value="Celular"/>
+                            </f:facet>
+                            <h:outputText value="#{item.celular}"/>
+                        </p:column>
+
+                        <p:column width="15%" sortBy="#{item.email}" filterBy="#{item.email}">
                             <f:facet name="header">
                                 <h:outputText value="Email"/>
                             </f:facet>
                             <h:outputText value="#{item.email}"/>
                         </p:column>
-                        
-                        <p:column width="8%" sortBy="#{item.contato}" filterBy="#{item.contato}">
-                            <f:facet name="header">
-                                <h:outputText value="Contato"/>
-                            </f:facet>
-                            <h:outputText value="#{item.contato}"/>
-                        </p:column>
 
-                        <p:column width="12%" sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
-                                  filterMatchMode="contains"> 
+                        <p:column width="10%" sortBy="#{item.cidade.nome}" filterBy="#{item.cidade.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Cidade"/>
                             </f:facet>
-                            <h:outputText value="#{item.idCidade.nome}"/>
-                        </p:column>
-                        
-                        <p:column width="12%" sortBy="#{item.idFuncao.descricao}"  filterBy="#{item.idFuncao.descricao}" 
-                                  filterMatchMode="contains"> 
-                            <f:facet name="header">
-                                <h:outputText value="Função"/>
-                            </f:facet>
-                            <h:outputText value="#{item.idFuncao.descricao}"/>
-                        </p:column>
-                        
-                        <p:column width="12%" sortBy="#{item.idEspecialidade.descricao}"  filterBy="#{item.idEspecialidade.descricao}" 
-                                  filterMatchMode="contains"> 
-                            <f:facet name="header">
-                                <h:outputText value="Especialidade"/>
-                            </f:facet>
-                            <h:outputText value="#{item.idEspecialidade != null ? item.idEspecialidade.descricao : ''}"/>
-                        </p:column>
-                        
-                        <p:column width="10%" sortBy="#{item.crm}" filterBy="#{item.crm}">
-                            <f:facet name="header">
-                                <h:outputText value="CRM"/>
-                            </f:facet>
-                            <h:outputText value="#{item.crm}"/>
+                            <h:outputText value="#{item.cidade.nome}"/>
                         </p:column>
 
-                        <p:column width="8%" sortBy="#{item.observacao}" filterBy="#{item.observacao}">
-                            <f:facet name="header">
-                                <h:outputText value="Observacao"/>
-                            </f:facet>
-                            <h:outputText value="#{item.observacao}"/>
-                        </p:column>
-                        
 
                         <f:facet name="footer">
-                            <p:commandButton id="btnCreate" value="Incluir Pessoa"  icon="pi pi-file" 
-                                             actionListener="#{usuarioController.prepareAdicionar()}"
-                                             update=":CreateForm"
-                                             onclick="PF('dlgCreate').show()"/>  
+                           <p:commandButton id="btnCreate" value="Novo Paciente" icon="pi pi-plus" 
+                 action="#{pacienteController.prepareAdicionar()}"
+                 update=":CreateForm"
+                 oncomplete="PF('dlgCreate').show()"
+                 immediate="true"/>
 
-                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Pessoa" 
+                            <p:commandButton id="btnEdit" icon="pi pi-pencil" value="Editar" 
                                              update="formEdit" oncomplete="PF('dlgEdit').show()" 
-                                             disabled="#{empty usuarioController.selected}"/>
+                                             disabled="#{empty pacienteController.selected}"/>
 
-                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Pessoa" 
-                                             actionListener="#{usuarioController.deletarUsuario()}" update="frmList" 
-                                             disabled="#{empty usuarioController.selected}">
-                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
-                                           icon="ui-icon-alert"  />
+                            <p:commandButton id="btnDelete" icon="pi pi-trash" value="Excluir" 
+                                             actionListener="#{pacienteController.deletarPaciente()}" update="frmList" 
+                                             disabled="#{empty pacienteController.selected}">
+                                <p:confirm header="Confirmação" message="Deseja realmente excluir este paciente?" 
+                                           icon="pi pi-exclamation-triangle" />
                             </p:commandButton>
 
-                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Pessoa" 
+                            <p:commandButton id="btnView" icon="pi pi-eye" value="Detalhes" 
                                              update="formView" oncomplete="PF('dlgView').show()" 
-                                             disabled="#{empty usuarioController.selected}"/>
-
+                                             disabled="#{empty pacienteController.selected}"/>
                         </f:facet>
                     </p:dataTable>
                 </p:fieldset>
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
-                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
                 </p:confirmDialog>
-
             </h:panelGroup>
         </h:form>
 
-        <p:dialog header="Nova Pessoa" widgetVar="dlgCreate" height="450" width="600" showEffect="fade" modal="true">
+        <!-- Diálogo de Cadastro -->
+        <p:dialog header="Novo Paciente" widgetVar="dlgCreate" modal="true" height="600" width="800" resizable="true">
             <h:form id="CreateForm">
                 <p:growl id="growl" showDetail="true" />
-                <h:panelGrid id="pngCadastro" columns="2">   
-                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
-                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
-                                 requiredMessage="O atributo nome é obrigatório"
-                                 value="#{usuarioController.usuario.nome}" maxlength="50" />                    
-
-                    <p:outputLabel id="oplDataNascimento" for="ipmDataNascimento" value="Data de Nascimento"  />
-                    <p:inputMask id="ipmDataNascimento" value="#{usuarioController.usuario.dtaNascimento}" 
-                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de nascimento é obrigatório">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
-                    </p:inputMask>
-
-                    <p:outputLabel id="oplEmail" value="Email:" for="iptEmail"/>
-                    <p:inputText id="iptEmail" size="40" label="Nome" required="true" 
-                                 requiredMessage="O atributo email é obrigatório" validatorMessage="Campo email é inválido"
-                                 value="#{usuarioController.usuario.email}" maxlength="50" >
-                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
-                    </p:inputText>
-                   
-                    
-                    <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
-                    <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
-                                 requiredMessage="O atributo senha é obrigatório"
-                                 value="#{usuarioController.usuario.senha}" />
-                    
-                     <p:outputLabel id="oplContato" value="Contato" for="iptContato"/>
-                    <p:inputMask id="iptContato" size="40" label="Contato" required="true"
-             requiredMessage="O atributo contato é obrigatório"
-             mask="(99) 9 9999-9999"
-             value="#{usuarioController.usuario.contato}" />
-
-                    <p:outputLabel value="Cidade: " for="idCidade" />
-                    <p:selectOneMenu id="idCidade" value="#{usuarioController.usuario.idCidade}" 
-                                     required="true" requiredMessage="O atributo cidade é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma cidade..." itemValue="#{null}"/>                        
-                        <f:selectItems value="#{cidadeController.cidadeAll()}"
-                                       var="idCidadeItem"
-                                       itemValue="#{idCidadeItem}"
-                                       itemLabel="#{idCidadeItem.nome}"/>
-                    </p:selectOneMenu>
-                    
-                    <p:outputLabel value="Função " for="idfuncao" />
-                    <p:selectOneMenu id="idfuncao" value="#{usuarioController.usuario.idFuncao}" 
-                                     required="true" requiredMessage="O atributo função é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma função..." itemValue="#{null}"/>                        
-                        <f:selectItems value="#{funcaoController.funcaoAll()}"
-               var="funcaoItem"
-               itemValue="#{funcaoItem}"
-               itemLabel="#{funcaoItem.descricao}" />
-
-                    </p:selectOneMenu>
-                   
-                    
-                     <p:outputLabel value="Especialidade " for="idEspecialidade" />
-                    <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.usuario.idEspecialidade}" 
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma especialidade..." itemValue="#{null}"/>                        
-                        <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="especialidadeItem"
-                                       itemValue="#{especialidadeItem}"
-                                       itemLabel="#{especialidadeItem.descricao}"/>
-                    </p:selectOneMenu>
-                     
-                    <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
-                    <p:inputText id="iptCrm" size="40" label="CRM" required="false"  
-                                 value="#{usuarioController.usuario.crm}" maxlength="50" >                     
-                    </p:inputText>
-
-                    <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
-                    <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
-                                     value="#{usuarioController.usuario.observacao}"/>
-
-                </h:panelGrid>   
                 
-                <p:commandButton actionListener="#{usuarioController.adicionarUsuario()}" 
-                                 icon="pi pi-save" value="Cadastrar" 
-                                 update=":frmList, CreateForm" 
-                                onclick="PF('dlgCreate').hide()"/>
-                    
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px;">
+                    <!-- Coluna Esquerda -->
+                    <div>
+                        <!-- Dados Pessoais -->
+                        <h3>Dados Pessoais</h3>
+                        
+                        <p:outputLabel value="Nome Completo *" for="nome" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="nome" value="#{pacienteController.paciente.nome}" required="true" maxlength="100" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="CPF *" for="cpf" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputMask id="cpf" value="#{pacienteController.paciente.cpf}" mask="999.999.999-99" required="true" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="RG" for="rg" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="rg" value="#{pacienteController.paciente.rg}" maxlength="20" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Data Nascimento *" for="dataNascimento" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:calendar id="dataNascimento" value="#{pacienteController.paciente.dataNascimento}" 
+                                    pattern="dd/MM/yyyy" required="true" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Sexo *" for="sexo" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:selectOneMenu id="sexo" value="#{pacienteController.paciente.sexo}" required="true" style="width: 100%; margin-bottom: 15px;">
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+                            <f:selectItem itemLabel="Masculino" itemValue="M"/>
+                            <f:selectItem itemLabel="Feminino" itemValue="F"/>
+                            <f:selectItem itemLabel="Outro" itemValue="O"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Estado Civil" for="estadoCivil" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="estadoCivil" value="#{pacienteController.paciente.estadoCivil}" maxlength="20" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Profissão" for="profissao" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="profissao" value="#{pacienteController.paciente.profissao}" maxlength="50" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <!-- Contato -->
+                        <h3>Contato</h3>
+                        
+                        <p:outputLabel value="Celular" for="celular" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputMask id="celular" value="#{pacienteController.paciente.celular}" mask="(99) 9 9999-9999" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Email" for="email" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="email" value="#{pacienteController.paciente.email}" maxlength="100" style="width: 100%; margin-bottom: 15px;">
+                             <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
+                        </p:inputText>
+                    </div>
+                   
+
+                    <!-- Coluna Direita -->
+                    <div>
+                        <!-- Endereço -->
+                        <h3>Endereço</h3>
+                        
+                        <p:outputLabel value="Endereço" for="endereco" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="endereco" value="#{pacienteController.paciente.endereco}" maxlength="150" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Número" for="numero" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="numero" value="#{pacienteController.paciente.numero}" maxlength="10" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Bairro" for="bairro" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="bairro" value="#{pacienteController.paciente.bairro}" maxlength="50" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="CEP" for="cep" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputMask id="cep" value="#{pacienteController.paciente.cep}" mask="99999-999" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="UF" for="uf" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputText id="uf" value="#{pacienteController.paciente.uf}" maxlength="2" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Cidade" for="cidade" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:selectOneMenu id="cidade" value="#{pacienteController.paciente.cidade.id}" style="width: 100%; margin-bottom: 15px;">
+                            <f:selectItem itemLabel="Selecione uma cidade" itemValue=""/>
+                            <f:selectItems value="#{cidadeController.cidadeAll()}" 
+                                          var="cidadeItem" 
+                                          itemLabel="#{cidadeItem.nome} - #{cidadeItem.ufenum}" 
+                                          itemValue="#{cidadeItem.id}"/>
+                        </p:selectOneMenu>
+
+                        <!-- Saúde -->
+                        <h3>Informações de Saúde</h3>
+                        
+                        <p:outputLabel value="Tipo Sanguíneo" for="tipoSanguineo" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:selectOneMenu id="tipoSanguineo" value="#{pacienteController.paciente.tipoSanguineo}" style="width: 100%; margin-bottom: 15px;">
+                            <f:selectItem itemLabel="Selecione" itemValue=""/>
+                            <f:selectItem itemLabel="A+" itemValue="A+"/>
+                            <f:selectItem itemLabel="A-" itemValue="A-"/>
+                            <f:selectItem itemLabel="B+" itemValue="B+"/>
+                            <f:selectItem itemLabel="B-" itemValue="B-"/>
+                            <f:selectItem itemLabel="AB+" itemValue="AB+"/>
+                            <f:selectItem itemLabel="AB-" itemValue="AB-"/>
+                            <f:selectItem itemLabel="O+" itemValue="O+"/>
+                            <f:selectItem itemLabel="O-" itemValue="O-"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Alergias" for="alergias" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputTextarea id="alergias" value="#{pacienteController.paciente.alergias}" rows="2" style="width: 100%; margin-bottom: 15px;"/>
+
+                        <p:outputLabel value="Medicamentos em Uso" for="medicamentosUso" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                        <p:inputTextarea id="medicamentosUso" value="#{pacienteController.paciente.medicamentosUso}" rows="2" style="width: 100%; margin-bottom: 15px;"/>
+                    </div>
+                </div>
+
+                <!-- Seção completa abaixo das colunas -->
+                <div style="padding: 0 20px 20px 20px;">
+                    <h3>Observações</h3>
+                    <p:outputLabel value="Observações" for="observacoes" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                    <p:inputTextarea id="observacoes" value="#{pacienteController.paciente.observacoes}" rows="3" style="width: 100%; margin-bottom: 20px;"/>
+
+                    <!-- Contato de Emergência -->
+                    <h3>Contato de Emergência</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div>
+                            <p:outputLabel value="Nome do Contato" for="contatoEmergenciaNome" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                            <p:inputText id="contatoEmergenciaNome" value="#{pacienteController.paciente.contatoEmergenciaNome}" maxlength="100" style="width: 100%;"/>
+                        </div>
+                        <div>
+                            <p:outputLabel value="Parentesco" for="contatoEmergenciaParentesco" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                            <p:inputText id="contatoEmergenciaParentesco" value="#{pacienteController.paciente.contatoEmergenciaParentesco}" maxlength="30" style="width: 100%;"/>
+                        </div>
+                        <div>
+                            <p:outputLabel value="Telefone" for="contatoEmergenciaTelefone" style="display: block; margin-bottom: 5px; font-weight: bold;"/>
+                            <p:inputMask id="contatoEmergenciaTelefone" value="#{pacienteController.paciente.contatoEmergenciaTelefone}" mask="(99) 9999-9999" style="width: 100%;"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding: 20px;">
+                    <p:commandButton value="Salvar" actionListener="#{pacienteController.adicionarPaciente()}" 
+                                    icon="pi pi-save" update=":frmList,:CreateForm" 
+                                    oncomplete="if(!args.validationFailed) PF('dlgCreate').hide()" 
+                                    styleClass="ui-button-success"/>
+                    <p:commandButton value="Cancelar" onclick="PF('dlgCreate').hide()" 
+                                    icon="pi pi-times" type="button" 
+                                    styleClass="ui-button-secondary" style="margin-left: 10px;"/>
+                </div>
             </h:form>
         </p:dialog>
 
-        <p:dialog header="Editar Pessoa" widgetVar="dlgEdit"  height="500" width="600" showEffect="fade" modal="true">
+        <!-- Diálogo de Edição -->
+        <p:dialog header="Editar Paciente" widgetVar="dlgEdit" modal="true" height="600" width="800" resizable="true">
             <h:form id="formEdit">
                 <p:growl id="growl" showDetail="true" />
-                <h:panelGrid id="pngEdicao" columns="2" rendered="#{usuarioController.selected != null}">   
-                    <p:outputLabel id="oplId" value="ID:" for="iptId"/>
-                    <p:inputText id="iptId" size="10" label="ID" disabled="true"
-                                 value="#{usuarioController.selected.cod}"  />
+                <div style="padding: 20px;" rendered="#{pacienteController.selected != null}">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Nome Completo *" for="editNome"/>
+                        <p:inputText id="editNome" value="#{pacienteController.selected.nome}" required="true" maxlength="100"/>
 
-                    <p:outputLabel id="oplDatahorareg" for="ipmDatahorareg" value="Registro"  />
-                    <p:inputText id="ipmDatahorareg" value="#{usuarioController.selected.dtaRegistro}"  disabled="true">
-                        <f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
-                    </p:inputText>
+                        <p:outputLabel value="CPF *" for="editCpf"/>
+                        <p:inputMask id="editCpf" value="#{pacienteController.selected.cpf}" mask="999.999.999-99" required="true"/>
 
-                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
-                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
-                                 requiredMessage="O atributo nome é obrigatório"
-                                 value="#{usuarioController.selected.nome}" maxlength="50" />
+        
+                    </p:panelGrid>
 
-                    <p:outputLabel id="oplDataNascimento" for="ipmDataNascimento" value="Data de Nascimento"  />
-                    <p:inputMask id="ipmDataNascimento" value="#{usuarioController.selected.dtaNascimento}" 
-                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de nascimento é obrigatório">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
-                    </p:inputMask>
-
-                    <p:outputLabel id="oplEmail" value="Email:" for="iptEmail"/>
-                    <p:inputText id="iptEmail" size="40" label="Nome" required="true" 
-                                 requiredMessage="O atributo email é obrigatório" validatorMessage="Campo email é inválido"
-                                 value="#{usuarioController.selected.email}" maxlength="50" >
-                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
-                    </p:inputText>
-                    
-                    <p:outputLabel id="oplContato" value="Contato" for="iptContato"/>
-                    <p:inputMask id="iptContato" size="40" label="Contato" required="true"
-             requiredMessage="O atributo contato é obrigatório"
-             mask="(99) 9 9999-9999"
-             value="#{usuarioController.selected.contato}" />
-
-                    <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
-                    <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
-                                 requiredMessage="O atributo senha é obrigatório"
-                                 value="#{usuarioController.selected.senha}" />
-
-                    
-                    <p:outputLabel value="Cidade: " for="idCidade" />
-                    <p:selectOneMenu id="idCidade" value="#{usuarioController.selected.idCidade}" 
-                                     required="true" requiredMessage="O atributo cidade é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma cidade..." itemValue="#{null}"/>                        
-                        <f:selectItems value="#{cidadeController.cidadeAll()}"
-                                       var="idCidadeItem"
-                                       itemValue="#{idCidadeItem}"
-                                       itemLabel="#{idCidadeItem.nome}"/>
-                    </p:selectOneMenu>
-                    
-                     <p:outputLabel value="Função " for="idfuncao" />
-                    <p:selectOneMenu id="idfuncao" value="#{usuarioController.selected.idFuncao}" 
-                                     required="true" requiredMessage="O atributo função é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma função..." itemValue="#{null}"/>                        
-                        <f:selectItems value="#{funcaoController.funcaoAll()}"
-                                       var="funcaoItem"
-                                       itemValue="#{funcaoItem}"
-                                       itemLabel="#{funcaoItem.descricao}"/>
-                    </p:selectOneMenu>
-                    
-                     <p:outputLabel value="Especialidade " for="idEspecialidade" />
-                    <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.selected.idEspecialidade}" 
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma especialidade..." itemValue="#{null}"/>                        
-                        <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="especialidadeItem"
-                                       itemValue="#{especialidadeItem}"
-                                       itemLabel="#{especialidadeItem.descricao}"/>
-                    </p:selectOneMenu>
-                     
-                     <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
-                    <p:inputText id="iptCrm" size="40" label="CRM" required="false"  
-                                 value="#{usuarioController.selected.crm}" maxlength="50" >                     
-                    </p:inputText>
-
-                    <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
-                    <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
-                                     value="#{usuarioController.selected.observacao}"/>
-
-                </h:panelGrid>   
-                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
-                                 onclick="PF('dlgEdit').hide()" icon="pi pi-save"
-                                 action="#{usuarioController.editarUsuario()}" />
+                    <div style="text-align: center; margin-top: 20px;">
+                        <p:commandButton value="Salvar" actionListener="#{pacienteController.editarPaciente()}" 
+                                        icon="pi pi-save" update=":frmList,:formEdit" 
+                                        oncomplete="if(!args.validationFailed) PF('dlgEdit').hide()"
+                                        styleClass="ui-button-success"/>
+                        <p:commandButton value="Cancelar" onclick="PF('dlgEdit').hide()" 
+                                        icon="pi pi-times" type="button" 
+                                        styleClass="ui-button-secondary" style="margin-left: 10px;"/>
+                    </div>
+                </div>
             </h:form>
         </p:dialog>
 
-        <p:dialog header="Visualizar Detalhes da Pessoa" widgetVar="dlgView"  height="250" 
-                  width="500" showEffect="fade" modal="true">
+        <!-- Diálogo de Visualização -->
+        <p:dialog header="Detalhes do Paciente" widgetVar="dlgView" modal="true" height="500" width="700">
             <h:form id="formView">
-                <h:panelGrid id="pngView" columns="2" rendered="#{usuarioController.selected != null}">    
-                    <p:outputLabel value="ID:" />
-                    <p:outputLabel value="#{usuarioController.selected.cod}"  />
+                <div style="padding: 20px;" rendered="#{pacienteController.selected != null}">
+                    <p:panelGrid columns="2" layout="grid" style="width:100%">
+                        <p:outputLabel value="Nome:"/>
+                        <p:outputLabel value="#{pacienteController.selected.nome}"/>
 
-                    <p:outputLabel value="Registro"  />
-                    <p:outputLabel value="#{usuarioController.selected.dtaRegistro}"  >
-                        <f:convertDateTime pattern="dd/MM/yy HH:mm"  />
-                    </p:outputLabel>
+                        <p:outputLabel value="CPF:"/>
+                        <p:outputLabel value="#{pacienteController.selected.cpf}"/>
 
-                    <p:outputLabel value="Nome: " />
-                    <p:outputLabel value="#{usuarioController.selected.nome}" />
-
-                    <p:outputLabel value="Data de Nascimento: "  />
-                    <p:outputLabel value="#{usuarioController.selected.dtaNascimento}" >
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
-                    </p:outputLabel>
-
-                    <p:outputLabel value="Email: " />                    
-                    <p:outputLabel value="#{usuarioController.selected.email}" />
-                    
-                    <p:outputLabel value="Contato " />                    
-                    <p:outputLabel value="#{usuarioController.selected.contato}" />
-                    
-                    <p:outputLabel value="Cidade: "/>
-                    <p:outputLabel value="#{usuarioController.selected.idCidade.nome}" />
-                    
-                    <p:outputLabel value="Função "/>
-                    <p:outputLabel value="#{usuarioController.selected.idFuncao.descricao}" />
-
-                    
-                    <p:outputLabel value="Especialidade "/>
-                    <p:outputLabel value="#{usuarioController.selected.idEspecialidade != null ? usuarioController.selected.idEspecialidade.descricao : 'Não informado'}" />
-                    
-                    <p:outputLabel value="CRM "/>
-                    <p:outputLabel value="#{usuarioController.selected.crm}" />
-
-
-                    <p:outputLabel value="Obervação:  "/>
-                    <p:outputLabel value="#{usuarioController.selected.observacao}"/>
-
-                </h:panelGrid>   
+                        
+                    </p:panelGrid>
+                </div>
             </h:form>
         </p:dialog>
     </ui:define>
-
 </ui:composition>

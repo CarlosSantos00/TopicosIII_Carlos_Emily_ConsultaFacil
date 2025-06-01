@@ -21,27 +21,20 @@
                 <li class="profile-item">
                     <a href="#">                            
                         <p:graphicImage name="images/avatar.png" library="manhattan-layout" />
-                        <span class="topbar-item-name profile-name">Madison Hughes</span>
+                        <span class="topbar-item-name profile-name">
+                            #{loginController.nomePessoa}
+                        </span>
                     </a>
                     
-                    <ul class="fadeInDown animated">
-                        <li role="menuitem">
-                            <a href="#">
-                                <i class="pi pi-fw pi-cog"/>
-                                <span>Configurações do perfil</span>
-                            </a>
-                        </li>
-                        
-                    </ul>
                 </li>
             </ul>
 
             <h:form>
-    <p:commandLink action="#{loginBean.logout}" styleClass="topbar-menu-btn" title="Logout">
-        <i class="pi pi-fw pi-sign-out"></i>
-        <span>Logout</span>
-    </p:commandLink>
-</h:form>
+                <p:commandLink action="#{loginController.logout}" styleClass="topbar-menu-btn" title="Logout">
+                    <i class="pi pi-fw pi-sign-out"></i>
+                    <span>Logout</span>
+                </p:commandLink>
+            </h:form>
 
         </div>
     </div>

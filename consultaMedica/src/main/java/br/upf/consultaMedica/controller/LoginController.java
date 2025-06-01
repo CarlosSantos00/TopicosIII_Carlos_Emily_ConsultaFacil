@@ -5,10 +5,12 @@ import br.upf.consultaMedica.facade.UsuarioFacade;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.util.Map;
 
 @Named
 @ViewScoped
@@ -30,18 +32,23 @@ public class LoginController implements Serializable {
     }
 
     public String validarLogin() {
-        UsuarioEntity usuario = usuarioFacade.buscarPorEmailESenha(pessoa.getEmail(), pessoa.getSenha());
+    UsuarioEntity usuario = usuarioFacade.buscarPorEmailESenha(pessoa.getEmail(), pessoa.getSenha());
 
-        if (usuario != null && usuario.getCod() != null) {
-            // Login válido, redireciona para home.xhtml
-            return "/admin/home.xhtml?faces-redirect=true";
-        } else {
-            // Login inválido, mensagem de erro
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login ou senha inválidos", null));
-            return null; // fica na mesma página
-        }
+    if (usuario != null && usuario.getCod() != null) {
+        // Armazena o usuário na sessão
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        Map<String, Object> sessionMap = externalContext.getSessionMap();
+        sessionMap.put("usuarioLogado", usuario);
+
+        // Redireciona para a home
+        return "/admin/home.xhtml?faces-redirect=true";
+    } else {
+        // Login inválido, exibe mensagem de erro
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Login ou senha inválidos", null));
+        return null;
     }
+}
 
     // Getters e Setters
 
@@ -71,5 +78,16 @@ public class LoginController implements Serializable {
         public void setSenha(String senha) {
             this.senha = senha;
         }
+    }
+    
+    public String getNomePessoa() {
+        ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+        UsuarioEntity usuario = (UsuarioEntity) externalContext.getSessionMap().get("usuarioLogado");
+        return (usuario != null) ? usuario.getNome() : "";
+    }
+    
+    public String logout() {
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "/login.xhtml?faces-redirect=true";
     }
 }

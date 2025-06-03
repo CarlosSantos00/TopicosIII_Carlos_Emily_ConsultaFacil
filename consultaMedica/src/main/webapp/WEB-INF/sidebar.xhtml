@@ -14,8 +14,9 @@
         <div class="layout-menu-container">
             <h:form id="menuform">
                 <pm:menu widgetVar="ManhattanMenuWidget">
+                    <p:menuitem id="mnuHome" value="Home" icon="pi pi-home" outcome="/admin/home.xhtml" />
                     <p:submenu label="Gerenciamento" icon="pi pi-cog">
-                        <p:menuitem id="mnuPacientes" value="Gerenciamento de Pacientes" icon="pi pi-users"/>
+                        <p:menuitem id="mnuPacientes" value="Gerenciamento de Pacientes" icon="pi pi-users" outcome="/admin/paciente.xhtml" />
                         <p:menuitem id="mnuUsuarios" value="Gerenciamento de Usuários" icon="pi pi-user" outcome="/admin/usuarios.xhtml" />
                         
                     </p:submenu>

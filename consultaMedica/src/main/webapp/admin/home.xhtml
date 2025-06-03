@@ -7,13 +7,287 @@
     template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">
-        <h:outputText value="Home" />
+        <h:outputText value="Dashboard | Consulta Fácil" />
     </ui:define>
 
     <ui:define name="content">
         <h:form id="frmHome">
-            <p:growl id="growl" showDetail="true" />
-            <h1>Bem-vindo de teste!</h1>
+            <style>
+                .dashboard-container {
+                    padding: 2rem;
+                    animation: fadeIn 0.8s ease-out;
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                .welcome-header {
+                    margin-bottom: 2.5rem;
+                    position: relative;
+                    padding-bottom: 1.5rem;
+                }
+                
+                .welcome-header::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100px;
+                    height: 4px;
+                    background: linear-gradient(90deg, #00bcd4, #ff4081);
+                    border-radius: 2px;
+                }
+                
+                .welcome-title {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    margin: 0;
+                    background: linear-gradient(90deg, #00bcd4, #ff4081);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    text-fill-color: transparent;
+                }
+                
+                .welcome-subtitle {
+                    font-size: 1.1rem;
+                    color: #546e7a;
+                    margin-top: 0.5rem;
+                }
+                
+                .cards-container {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 1.5rem;
+                    margin-bottom: 2rem;
+                }
+                
+                .dashboard-card {
+                    background: white;
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                    transition: all 0.3s ease;
+                    border-left: 4px solid #00bcd4;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .dashboard-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+                }
+                
+                .dashboard-card::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(135deg, rgba(0, 188, 212, 0.05) 0%, rgba(255, 64, 129, 0.05) 100%);
+                    z-index: 0;
+                }
+                
+                .card-icon {
+                    font-size: 2rem;
+                    margin-bottom: 1rem;
+                    color: #00bcd4;
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .card-title {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    margin-bottom: 0.5rem;
+                    color: #263238;
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .card-value {
+                    font-size: 2rem;
+                    font-weight: 700;
+                    margin: 0;
+                    color: #37474f;
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .card-description {
+                    font-size: 0.9rem;
+                    color: #78909c;
+                    margin-top: 0.5rem;
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .appointments-section {
+                    margin-top: 3rem;
+                    background: white;
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                }
+                
+                .section-title {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1.5rem;
+                    color: #263238;
+                    display: flex;
+                    align-items: center;
+                }
+                
+                .section-title i {
+                    margin-right: 0.75rem;
+                    color: #00bcd4;
+                }
+                
+                .appointments-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+                
+                .appointment-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 1rem;
+                    background: #f5f5f5;
+                    border-radius: 8px;
+                    transition: all 0.3s;
+                }
+                
+                .appointment-item:hover {
+                    background: #e0f7fa;
+                    transform: translateX(5px);
+                }
+                
+                .appointment-time {
+                    font-weight: 600;
+                    color: #00bcd4;
+                    min-width: 80px;
+                }
+                
+                .appointment-details {
+                    flex-grow: 1;
+                    padding: 0 1rem;
+                }
+                
+                .appointment-patient {
+                    font-weight: 600;
+                    margin-bottom: 0.25rem;
+                }
+                
+                .appointment-procedure {
+                    color: #78909c;
+                    font-size: 0.9rem;
+                }
+                
+                .appointment-status {
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 20px;
+                    font-size: 0.8rem;
+                    font-weight: 500;
+                }
+                
+                .status-scheduled {
+                    background: #e3f2fd;
+                    color: #1976d2;
+                }
+                
+                .status-confirmed {
+                    background: #e8f5e9;
+                    color: #388e3c;
+                }
+                
+                .status-pending {
+                    background: #fff8e1;
+                    color: #ffa000;
+                }
+            </style>
+
+            <p:growl id="growl" showDetail="true" life="6000"/>
+            
+            <div class="dashboard-container">
+                <div class="welcome-header">
+                    <h1 class="welcome-title">
+                        Bem-vindo, <h:outputText value="#{loginController.nomePessoa}" />
+</h1>
+                    <p class="welcome-subtitle">Aqui está o que está acontecendo hoje no seu consultório</p>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="dashboard-card">
+                        <i class="pi pi-calendar card-icon"></i>
+                        <h3 class="card-title">Consultas Hoje</h3>
+                        <p class="card-value">12</p>
+                        <p class="card-description">+2 em relação a ontem</p>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <i class="pi pi-users card-icon"></i>
+                        <h3 class="card-title">Pacientes</h3>
+                        <p class="card-value">348</p>
+                        <p class="card-description">+15 este mês</p>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <i class="pi pi-clock card-icon"></i>
+                        <h3 class="card-title">Próxima Consulta</h3>
+                        <p class="card-value">08:30 AM</p>
+                        <p class="card-description">João Carlos Silva - Cardiologia</p>
+                    </div>
+                    
+                </div>
+
+                
+                <div class="appointments-section">
+                    <h2 class="section-title"><i class="pi pi-list"></i> Consultas do dia</h2>
+                    
+                    <div class="appointments-list">
+                        <div class="appointment-item">
+                            <div class="appointment-time">08:30</div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">João Carlos Silva</div>
+                                <div class="appointment-procedure">Consulta de rotina - Cardiologia</div>
+                            </div>
+                            <div class="appointment-status status-confirmed">Confirmado</div>
+                        </div>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-time">10:15</div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">Ana Paula Oliveira</div>
+                                <div class="appointment-procedure">Pediatria</div>
+                            </div>
+                            <div class="appointment-status status-confirmed">Confirmado</div>
+                        </div>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-time">11:30</div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">Roberto Almeida</div>
+                                <div class="appointment-procedure">Clinico geral</div>
+                            </div>
+                            <div class="appointment-status status-pending">Pendente</div>
+                        </div>
+                        
+                        <div class="appointment-item">
+                            <div class="appointment-time">14:00</div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">Mariana Costa</div>
+                                <div class="appointment-procedure">Ginecologia</div>
+                            </div>
+                            <div class="appointment-status status-pending">Pendente</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </h:form>
     </ui:define>
 

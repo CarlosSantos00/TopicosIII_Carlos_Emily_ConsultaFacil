@@ -26,7 +26,7 @@ public class FuncaoFacade extends AbstractFacade<FuncaoEntity> {
     public List<FuncaoEntity> buscarTodos() {
         List<FuncaoEntity> entityList = new ArrayList<>();
         try {
-            Query query = getEntityManager().createQuery("SELECT f FROM FuncaoEntity f ORDER BY f.nome");
+            Query query = getEntityManager().createQuery("SELECT f FROM FuncaoEntity f ORDER BY f.descricao");
             entityList = query.getResultList();
         } catch (Exception e) {
             System.out.println("Erro FuncaoFacade: " + e);

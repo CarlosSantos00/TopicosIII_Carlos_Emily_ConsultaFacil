@@ -121,4 +121,5 @@ public class UsuarioController implements Serializable {
             addErrorMessage(ex.getLocalizedMessage());
         }
     }
+    
 }

@@ -26,7 +26,7 @@ public class EspecialidadeFacade extends AbstractFacade<EspecialidadeEntity> {
     public List<EspecialidadeEntity> buscarTodos() {
         List<EspecialidadeEntity> entityList = new ArrayList<>();
         try {
-            Query query = getEntityManager().createQuery("SELECT e FROM EspecialidadeEntity e ORDER BY e.nome");
+            Query query = getEntityManager().createQuery("SELECT e FROM EspecialidadeEntity e ORDER BY e.descricao");
             entityList = query.getResultList();
         } catch (Exception e) {
             System.out.println("Erro EspecialidadeFacade: " + e);

@@ -52,7 +52,7 @@ public class CidadeController implements Serializable {
             }
             return ejbFacade.buscarTodos().stream()
                     .filter(c -> c.getNome().toLowerCase().contains(nome.toLowerCase()))
-                    .toList();
+                    .collect(java.util.stream.Collectors.toList());
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Erro ao buscar cidades por nome: " + nome, ex);
             return new ArrayList<>();

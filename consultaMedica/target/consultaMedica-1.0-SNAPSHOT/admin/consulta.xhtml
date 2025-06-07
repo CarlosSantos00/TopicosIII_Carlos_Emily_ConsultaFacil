@@ -12,19 +12,19 @@
     <ui:define name="content">
         <h:form id="frmList">            
             <h:panelGroup id="pngList"> 
-                <p:growl id="growl" showDetail="true" />
+                <p:growl id="growl" showDetail="true" sticky="false"/>
                 
-                <p:fieldset toggleable="true">
+                <p:fieldset toggleable="true" toggleSpeed="500">
                     <p:dataTable id="datalist" value="#{consultaController.consultaList}" var="item"   
                        selectionMode="single" selection="#{consultaController.selected}"
                        widgetVar="datalistConsultaWidgetVar"
                        rowKey="#{item.id}"
-                        paginator="true"
-                        paginatorPosition="bottom"
-                        rows="10"
-                        rowsPerPageTemplate="10,20,50,100"
-                        emptyMessage="Nenhuma consulta cadastrada...">
-                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
+                       paginator="true"
+                       paginatorPosition="bottom"
+                       rows="10"
+                       rowsPerPageTemplate="10,20,50,100"
+                       emptyMessage="Nenhuma consulta cadastrada...">
+                        <p:ajax event="rowSelect" update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
 
                         <p:column width="10%" sortBy="#{item.id}">
@@ -68,69 +68,69 @@
                                                        'status-cancelada'}"/>
                         </p:column>
 
-<p:column width="23%" sortBy="#{item.observacoes}">
-    <f:facet name="header">
-        <h:outputText value="Observações"/>
-    </f:facet>
-    <h:outputText value="#{item.observacoes}" 
-                  rendered="#{not empty item.observacoes}"/>
-    <h:outputText value="-" 
-                  rendered="#{empty item.observacoes}" 
-                  style="color: #999; font-style: italic;"/>
-</p:column>
+                        <p:column width="23%" sortBy="#{item.observacoes}">
+                            <f:facet name="header">
+                                <h:outputText value="Observações"/>
+                            </f:facet>
+                            <h:outputText value="#{item.observacoes}" 
+                                          rendered="#{not empty item.observacoes}"/>
+                            <h:outputText value="-" 
+                                          rendered="#{empty item.observacoes}" 
+                                          style="color: #999; font-style: italic;"/>
+                        </p:column>
 
                         <f:facet name="footer">
-                            <p:commandButton id="btnCreate" value="Nova Consulta"  icon="pi pi-plus" 
-                                             actionListener="#{consultaController.prepareAdicionar()}"
+                            <p:commandButton id="btnCreate" value="Nova Consulta" icon="pi pi-plus" 
+                                             action="#{consultaController.prepareAdicionar()}"
                                              update=":CreateForm"
-                                             onclick="PF('dlgCreate').show()"/>  
+                                             oncomplete="PF('dlgCreate').show()"/>  
 
-                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar" 
-                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit" value="Editar" 
+                                             update=":formEdit" oncomplete="PF('dlgEdit').show()" 
                                              disabled="#{empty consultaController.selected}"/>
 
-                            <p:commandButton id="btnConfirmar" icon="pi pi-check"  value="Confirmar" 
-                                             actionListener="#{consultaController.confirmarConsulta()}" 
-                                             update="frmList" 
+                            <p:commandButton id="btnConfirmar" icon="pi pi-check" value="Confirmar" 
+                                             action="#{consultaController.confirmarConsulta()}" 
+                                             update=":frmList" 
                                              disabled="#{empty consultaController.selected or consultaController.selected.status != 'Agendada'}">
                                 <p:confirm header="Confirmar Consulta" message="Deseja confirmar esta consulta?" 
-                                           icon="ui-icon-info"  />
+                                           icon="pi pi-info-circle" />
                             </p:commandButton>
 
-                            <p:commandButton id="btnCancelar" icon="pi pi-times"  value="Cancelar" 
-                                             actionListener="#{consultaController.cancelarConsulta()}" 
-                                             update="frmList" 
+                            <p:commandButton id="btnCancelar" icon="pi pi-times" value="Cancelar" 
+                                             action="#{consultaController.cancelarConsulta()}" 
+                                             update=":frmList" 
                                              disabled="#{empty consultaController.selected or (consultaController.selected.status != 'Agendada' and consultaController.selected.status != 'Confirmada')}">
                                 <p:confirm header="Cancelar Consulta" message="Deseja cancelar esta consulta?" 
-                                           icon="ui-icon-alert"  />
+                                           icon="pi pi-exclamation-triangle" />
                             </p:commandButton>
 
-                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir" 
-                                             actionListener="#{consultaController.deletarConsulta()}" update="frmList" 
+                            <p:commandButton id="btnDelete" icon="pi pi-trash" value="Excluir" 
+                                             action="#{consultaController.deletarConsulta()}" 
+                                             update=":frmList" 
                                              disabled="#{empty consultaController.selected}">
                                 <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
-                                           icon="ui-icon-alert"  />
+                                           icon="pi pi-exclamation-triangle" />
                             </p:commandButton>
 
-                            <p:commandButton id="btnView" icon="pi pi-eye"  value="Detalhes" 
-                                             update="formView" oncomplete="PF('dlgView').show()" 
+                            <p:commandButton id="btnView" icon="pi pi-eye" value="Detalhes" 
+                                             update=":formView" oncomplete="PF('dlgView').show()" 
                                              disabled="#{empty consultaController.selected}"/>
-
                         </f:facet>
                     </p:dataTable>
                 </p:fieldset>
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
-                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
                 </p:confirmDialog>
-
             </h:panelGroup>
         </h:form>
 
         <!-- Dialog para Nova Consulta -->
-        <p:dialog header="Nova Consulta Médica" widgetVar="dlgCreate" height="500" width="600" showEffect="fade" modal="true">
+        <p:dialog header="Nova Consulta Médica" widgetVar="dlgCreate" height="500" width="600" 
+                 showEffect="fade" modal="true" closeOnEscape="true">
             <h:form id="CreateForm">
-                <p:growl id="growl" showDetail="true" />
+                <p:growl id="growlCreate" showDetail="true" />
                 <h:panelGrid id="pngCadastro" columnClasses="label,value">   
 
                     <!-- Paciente -->
@@ -138,7 +138,7 @@
                     <h:panelGroup>
                         <p:selectOneMenu id="selPaciente" value="#{consultaController.pacienteIdSelecionado}" 
                                          required="true" requiredMessage="O paciente é obrigatório"
-                                         style="width:150%"  filter="true" filterMatchMode="contains">
+                                         style="width:150%" filter="true" filterMatchMode="contains">
                             <f:selectItem itemLabel="Selecione o paciente..." itemValue="" noSelectionOption="true"/>
                             <f:selectItems value="#{pacienteController.pacienteList}" 
                                            var="paciente" 
@@ -179,7 +179,6 @@
                     <p:selectOneMenu id="selStatusNovo" value="#{consultaController.consulta.status}" 
                                      style="width:150%">
                         <f:selectItem itemLabel="Agendada" itemValue="Agendada"/>
-                        
                     </p:selectOneMenu>
 
                     <!-- Observações -->
@@ -189,18 +188,19 @@
 
                 </h:panelGrid>
                 
-                <p:commandButton actionListener="#{consultaController.adicionarConsulta()}" 
+                <p:commandButton action="#{consultaController.adicionarConsulta}" 
                                  icon="pi pi-save" value="Agendar Consulta" 
-                                 update=":frmList, CreateForm" 
-                                 onclick="dlgCreate.hide()" style="margin-top:10px"/>
-                    
+                                 update=":frmList:growl, CreateForm:growlCreate" 
+                                 oncomplete="if(!args.validationFailed) PF('dlgCreate').hide()" 
+                                 style="margin-top:10px"/>
             </h:form>
         </p:dialog>
 
         <!-- Dialog para Editar Consulta -->
-        <p:dialog header="Editar Consulta Médica" widgetVar="dlgEdit" height="600" width="650" showEffect="fade" modal="true">
+        <p:dialog header="Editar Consulta Médica" widgetVar="dlgEdit" height="600" width="650" 
+                 showEffect="fade" modal="true" closeOnEscape="true">
             <h:form id="formEdit">
-                <p:growl id="growl" showDetail="true" />
+                <p:growl id="growlEdit" showDetail="true" />
                 <h:panelGrid id="pngEdicao" columnClasses="label,value" rendered="#{consultaController.selected != null}">   
                     
                     <p:outputLabel value="ID:" for="iptId"/>
@@ -240,13 +240,13 @@
                     <!-- Data e Hora -->
                     <p:outputLabel value="Data/Hora:" for="dtConsultaEdit"/>
                     <h:panelGroup>
-    <p:calendar id="dtConsultaEdit" value="#{consultaController.selected.dataHoraAsDate}" 
-                showOn="button" pattern="dd/MM/yyyy HH:mm" 
-                mask="99/99/9999 99:99" timeOnly="false"
-                required="true" requiredMessage="A data/hora é obrigatória"
-                stepMinute="15" style="width:150%"/>
-    <p:message for="dtConsultaEdit" display="text"/>
-</h:panelGroup>
+                        <p:calendar id="dtConsultaEdit" value="#{consultaController.selected.dataHoraAsDate}" 
+                                    showOn="button" pattern="dd/MM/yyyy HH:mm" 
+                                    mask="99/99/9999 99:99" timeOnly="false"
+                                    required="true" requiredMessage="A data/hora é obrigatória"
+                                    stepMinute="15" style="width:150%"/>
+                        <p:message for="dtConsultaEdit" display="text"/>
+                    </h:panelGroup>
 
                     <!-- Status -->
                     <p:outputLabel value="Status:" for="selStatusEdit"/>
@@ -264,17 +264,19 @@
                                      value="#{consultaController.selected.observacoes}"/>
 
                 </h:panelGrid>
-                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
-                                 onclick="dlgEdit.hide()" icon="pi pi-save" style="margin-top:10px"
-                                 action="#{consultaController.editarConsulta()}" />
+                <p:commandButton id="btnSalvarEdicao" value="Salvar" 
+                                 update=":formEdit, :frmList:growl, formEdit:growlEdit" 
+                                 action="#{consultaController.editarConsulta}"
+                                 oncomplete="if(!args.validationFailed) PF('dlgEdit').hide()" 
+                                 icon="pi pi-save" style="margin-top:10px"/>
             </h:form>
         </p:dialog>
 
         <!-- Dialog para Visualizar Detalhes -->
         <p:dialog header="Detalhes da Consulta Médica" widgetVar="dlgView" height="400" 
-                  width="500" showEffect="fade" modal="true">
+                  width="500" showEffect="fade" modal="true" closeOnEscape="true">
             <h:form id="formView">
-                <h:panelGrid id="pngView" columns="2" rendered="#{consultaController.selected != null}">    
+                <h:panelGrid id="pngView" rendered="#{consultaController.selected != null}">    
                     
                     <p:outputLabel value="ID:" />
                     <p:outputLabel value="#{consultaController.selected.id}" />
@@ -334,7 +336,5 @@
                 font-weight: bold;
             }
         </style>
-
     </ui:define>
-
 </ui:composition>

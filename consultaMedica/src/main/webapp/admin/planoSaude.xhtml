@@ -6,7 +6,7 @@
                 template="/WEB-INF/template.xhtml">
 
     <ui:define name="title">
-        <h:outputText value="Usuarios"></h:outputText>
+        <h:outputText value="Planos de Saúde"></h:outputText>
     </ui:define>
 
     <ui:define name="content">
@@ -14,98 +14,107 @@
             <h:panelGroup id="pngList"> 
                 <p:growl id="growl" showDetail="true" />
                 <p:fieldset toggleable="true">
-                    <p:dataTable id="datalist" value="#{usuarioController.usuarioList}" var="item"   
-                       selectionMode="single" selection="#{usuarioController.selected}"
-                       widgetVar="datalistPessoaWidgetVar"
-                       rowKey="#{item.cod}"
+                    <p:dataTable id="datalist" value="#{planoSaudeController.planoSaudeList}" var="item"   
+                       selectionMode="single" selection="#{planoSaudeController.selected}"
+                       widgetVar="datalistPlanoSaudeWidgetVar"
+                       rowKey="#{item.id}"
                         paginator="true"
                         paginatorPosition="bottom"
                         rows="5"
                         rowsPerPageTemplate="5,10,50,100"
-                        emptyMessage="Nenhum usuário cadastrada...">
+                        emptyMessage="Nenhum plano de saúde cadastrado...">
                         <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
 
-                        <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                        <p:column width="15%" sortBy="#{item.nome}" filterBy="#{item.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Nome"/>
                             </f:facet>
                             <h:outputText value="#{item.nome}"/>
                         </p:column>
 
-                        <p:column width="8%" sortBy="#{item.email}" filterBy="#{item.email}">
+                        <p:column width="10%" sortBy="#{item.codigoANS}" filterBy="#{item.codigoANS}">
                             <f:facet name="header">
-                                <h:outputText value="Email"/>
+                                <h:outputText value="Código ANS"/>
                             </f:facet>
-                            <h:outputText value="#{item.email}"/>
+                            <h:outputText value="#{item.codigoANS}"/>
                         </p:column>
                         
-                        <p:column width="8%" sortBy="#{item.contato}" filterBy="#{item.contato}">
+                        <p:column width="12%" sortBy="#{item.tipoPlano}" filterBy="#{item.tipoPlano}">
                             <f:facet name="header">
-                                <h:outputText value="Contato"/>
+                                <h:outputText value="Tipo do Plano"/>
                             </f:facet>
-                            <h:outputText value="#{item.contato}"/>
+                            <h:outputText value="#{item.tipoPlano}"/>
                         </p:column>
 
-                        <p:column width="12%" sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
-                                  filterMatchMode="contains"> 
+                        <p:column width="10%" sortBy="#{item.valorMensal}">
                             <f:facet name="header">
-                                <h:outputText value="Cidade"/>
+                                <h:outputText value="Valor Mensal"/>
                             </f:facet>
-                            <h:outputText value="#{item.idCidade.nome}"/>
+                            <h:outputText value="#{item.valorMensal}">
+                                <f:convertNumber type="currency" currencySymbol="R$ "/>
+                            </h:outputText>
                         </p:column>
                         
-                        <p:column width="12%" sortBy="#{item.idFuncao.descricao}"  filterBy="#{item.idFuncao.descricao}" 
-                                  filterMatchMode="contains"> 
+                        <p:column width="10%" sortBy="#{item.coparticipacao}">
                             <f:facet name="header">
-                                <h:outputText value="Função"/>
+                                <h:outputText value="Coparticipação"/>
                             </f:facet>
-                            <h:outputText value="#{item.idFuncao.descricao}"/>
+                            <h:outputText value="#{item.coparticipacao}">
+                                <f:convertNumber type="currency" currencySymbol="R$ "/>
+                            </h:outputText>
                         </p:column>
                         
-                        <p:column width="12%" sortBy="#{item.idEspecialidade.descricao}"  filterBy="#{item.idEspecialidade.descricao}" 
-                                  filterMatchMode="contains"> 
+                        <p:column width="8%" sortBy="#{item.cobreInternacao}" filterBy="#{item.cobreInternacao}">
                             <f:facet name="header">
-                                <h:outputText value="Especialidade"/>
+                                <h:outputText value="Internação"/>
                             </f:facet>
-                            <h:outputText value="#{item.idEspecialidade.descricao}"/>
+                            <h:outputText value="#{item.cobreInternacao}"/>
                         </p:column>
                         
-                        <p:column width="10%" sortBy="#{item.crm}" filterBy="#{item.crm}">
+                        <p:column width="8%" sortBy="#{item.cobreEmergencia}" filterBy="#{item.cobreEmergencia}">
                             <f:facet name="header">
-                                <h:outputText value="CRM"/>
+                                <h:outputText value="Emergência"/>
                             </f:facet>
-                            <h:outputText value="#{item.crm}"/>
+                            <h:outputText value="#{item.cobreEmergencia}"/>
                         </p:column>
 
-                        <p:column width="8%" sortBy="#{item.observacao}" filterBy="#{item.observacao}">
+                        <p:column width="8%" sortBy="#{item.cobreOdontologico}" filterBy="#{item.cobreOdontologico}">
                             <f:facet name="header">
-                                <h:outputText value="Observacao"/>
+                                <h:outputText value="Odontológico"/>
                             </f:facet>
-                            <h:outputText value="#{item.observacao}"/>
+                            <h:outputText value="#{item.cobreOdontologico}"/>
                         </p:column>
-                        
+
+                        <p:column width="12%" sortBy="#{item.dataCadastro}">
+                            <f:facet name="header">
+                                <h:outputText value="Data Cadastro"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataCadastro}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
 
                         <f:facet name="footer">
-                            <p:commandButton id="btnCreate" value="Incluir usuário"  icon="pi pi-file" 
-                                             actionListener="#{usuarioController.prepareAdicionar()}"
+                            <p:commandButton id="btnCreate" value="Incluir Plano"  icon="pi pi-file" 
+                                             actionListener="#{planoSaudeController.prepareAdicionar()}"
                                              update=":CreateForm"
                                              onclick="PF('dlgCreate').show()"/>  
 
-                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar usuário" 
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Plano" 
                                              update="formEdit" oncomplete="PF('dlgEdit').show()" 
-                                             disabled="#{empty usuarioController.selected}"/>
+                                             disabled="#{empty planoSaudeController.selected}"/>
 
-                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Usuário" 
-                                             actionListener="#{usuarioController.deletarUsuario()}" update="frmList" 
-                                             disabled="#{empty usuarioController.selected}">
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Plano" 
+                                             actionListener="#{planoSaudeController.deletarPlanoSaude()}" update="frmList" 
+                                             disabled="#{empty planoSaudeController.selected}">
                                 <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
                                            icon="ui-icon-alert"  />
                             </p:commandButton>
 
-                            <p:commandButton id="btnView" icon="pi pi-eye"  value="Detalhes do usuário" 
+                            <p:commandButton id="btnView" icon="pi pi-eye"  value="Detalhes do Plano" 
                                              update="formView" oncomplete="PF('dlgView').show()" 
-                                             disabled="#{empty usuarioController.selected}"/>
+                                             disabled="#{empty planoSaudeController.selected}"/>
 
                         </f:facet>
                     </p:dataTable>
@@ -118,86 +127,77 @@
             </h:panelGroup>
         </h:form>
 
-        <p:dialog header="Novo usuário" widgetVar="dlgCreate" height="450" width="600" showEffect="fade" modal="true">
+        <!-- Dialog para Incluir Plano -->
+        <p:dialog header="Novo Plano de Saúde" widgetVar="dlgCreate" height="600" width="700" showEffect="fade" modal="true">
             <h:form id="CreateForm">
                 <p:growl id="growl" showDetail="true" />
                 <h:panelGrid id="pngCadastro" columns="2">   
                     <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
-                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                    <p:inputText id="iptNome" size="50" label="Nome" required="true" 
                                  requiredMessage="O atributo nome é obrigatório"
-                                 value="#{usuarioController.usuario.nome}" maxlength="50" />                    
+                                 value="#{planoSaudeController.planoSaude.nome}" maxlength="100" />                    
 
-                    <p:outputLabel id="oplDataNascimento" for="ipmDataNascimento" value="Data de Nascimento"  />
-                    <p:inputMask id="ipmDataNascimento" value="#{usuarioController.usuario.dtaNascimento}" 
-                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de nascimento é obrigatório">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
-                    </p:inputMask>
+                    <p:outputLabel id="oplCodigoANS" value="Código ANS:" for="iptCodigoANS"/>
+                    <p:inputText id="iptCodigoANS" size="20" label="Código ANS" required="true" 
+                                 requiredMessage="O atributo código ANS é obrigatório"
+                                 value="#{planoSaudeController.planoSaude.codigoANS}" maxlength="20" />
 
-                    <p:outputLabel id="oplEmail" value="Email:" for="iptEmail"/>
-                    <p:inputText id="iptEmail" size="40" label="Nome" required="true" 
-                                 requiredMessage="O atributo email é obrigatório" validatorMessage="Campo email é inválido"
-                                 value="#{usuarioController.usuario.email}" maxlength="50" >
-                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
-                    </p:inputText>
+                    <p:outputLabel id="oplTipoPlano" value="Tipo do Plano:" for="iptTipoPlano"/>
+                    <p:selectOneMenu id="iptTipoPlano" value="#{planoSaudeController.planoSaude.tipoPlano}" 
+                                     required="true" requiredMessage="O atributo tipo do plano é obrigatório!"
+                                     panelStyle="width:200px">
+                        <f:selectItem itemLabel="Selecione o tipo..."/>
+                        <f:selectItem itemLabel="Individual" itemValue="Individual"/>
+                        <f:selectItem itemLabel="Familiar" itemValue="Familiar"/>
+                        <f:selectItem itemLabel="Empresarial" itemValue="Empresarial"/>
+                        <f:selectItem itemLabel="Coletivo" itemValue="Coletivo"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplValorMensal" value="Valor Mensal (R$):" for="iptValorMensal"/>
+                    <p:inputNumber id="iptValorMensal" value="#{planoSaudeController.planoSaude.valorMensal}" 
+                                   required="true" requiredMessage="O valor mensal é obrigatório"
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.01"/>
                    
-                    
-                    <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
-                    <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
-                                 requiredMessage="O atributo senha é obrigatório"
-                                 value="#{usuarioController.usuario.senha}" />
-                    
-                     <p:outputLabel id="oplContato" value="Contato" for="iptContato"/>
-                    <p:inputMask id="iptContato" size="40" label="Contato" required="true"
-             requiredMessage="O atributo contato é obrigatório"
-             mask="(99) 9 9999-9999"
-             value="#{usuarioController.usuario.contato}" />
+                    <p:outputLabel id="oplCoparticipacao" value="Coparticipação (R$):" for="iptCoparticipacao"/>
+                    <p:inputNumber id="iptCoparticipacao" value="#{planoSaudeController.planoSaude.coparticipacao}" 
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.00"/>
 
-                    <p:outputLabel value="Cidade: " for="idCidade" />
-                    <p:selectOneMenu id="idCidade" value="#{usuarioController.usuario.idCidade}" 
-                                     required="false" requiredMessage="O atributo cidade é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma cidade..."/>                        
-                        <f:selectItems value="#{cidadeController.cidadeAll()}"
-                                       var="idCidadeItem"
-                                       itemValue="#{idCidadeItem}"
-                                       itemLabel="#{idCidadeItem.nome}"/>
+                    <p:outputLabel value="Cobre Internação:" for="selCobreInternacao" />
+                    <p:selectOneMenu id="selCobreInternacao" value="#{planoSaudeController.planoSaude.cobreInternacao}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
                     </p:selectOneMenu>
                     
-                    <p:outputLabel value="Função " for="idfuncao" />
-                    <p:selectOneMenu id="idfuncao" value="#{usuarioController.usuario.idFuncao}" 
-                                     required="false" requiredMessage="O atributo função é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma função..."/>                        
-                        <f:selectItems value="#{funcaoController.funcaoAll()}"
-               var="funcaoItem"
-               itemValue="#{funcaoItem}"
-               itemLabel="#{funcaoItem.descricao}" />
-
+                    <p:outputLabel value="Cobre Emergência:" for="selCobreEmergencia" />
+                    <p:selectOneMenu id="selCobreEmergencia" value="#{planoSaudeController.planoSaude.cobreEmergencia}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
                     </p:selectOneMenu>
                    
-                    
-                     <p:outputLabel value="Especialidade " for="idEspecialidade" />
-                    <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.usuario.idEspecialidade}" 
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma especialidade..."/>                        
-                        <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="epecialidadeItem"
-                                       itemValue="#{epecialidadeItem}"
-                                       itemLabel="#{epecialidadeItem.descricao}"/>
+                    <p:outputLabel value="Cobre Odontológico:" for="selCobreOdontologico" />
+                    <p:selectOneMenu id="selCobreOdontologico" value="#{planoSaudeController.planoSaude.cobreOdontologico}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
                     </p:selectOneMenu>
-                     
-                    <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
-                    <p:inputText id="iptCrm" size="40" label="CRM" required="true"  
-                                 value="#{usuarioController.usuario.crm}" maxlength="50" >                     
-                    </p:inputText>
 
-                    <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
-                    <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
-                                     value="#{usuarioController.usuario.observacao}"/>
+                    <p:outputLabel id="oplObservacoes" value="Observações:" for="txtObservacoes"/>
+                    <p:inputTextarea id="txtObservacoes" rows="4" cols="50" autoResize="false" 
+                                     value="#{planoSaudeController.planoSaude.observacoes}"/>
 
                 </h:panelGrid>   
                 
-                <p:commandButton actionListener="#{usuarioController.adicionarUsuario()}" 
+                <p:commandButton actionListener="#{planoSaudeController.adicionarPlanoSaude()}" 
                                  icon="pi pi-save" value="Cadastrar" 
                                  update=":frmList, CreateForm" 
                                 onclick="dlgCreate.hide()"/>
@@ -205,139 +205,138 @@
             </h:form>
         </p:dialog>
 
-        <p:dialog header="Editar Usuário" widgetVar="dlgEdit"  height="500" width="600" showEffect="fade" modal="true">
+        <!-- Dialog para Editar Plano -->
+        <p:dialog header="Editar Plano de Saúde" widgetVar="dlgEdit"  height="650" width="700" showEffect="fade" modal="true">
             <h:form id="formEdit">
                 <p:growl id="growl" showDetail="true" />
-                <h:panelGrid id="pngEdicao" columns="2" rendered="#{usuarioController.selected != null}">   
+                <h:panelGrid id="pngEdicao" columns="2" rendered="#{planoSaudeController.selected != null}">   
                     <p:outputLabel id="oplId" value="ID:" for="iptId"/>
                     <p:inputText id="iptId" size="10" label="ID" disabled="true"
-                                 value="#{usuarioController.selected.cod}"  />
+                                 value="#{planoSaudeController.selected.id}"  />
 
-                    <p:outputLabel id="oplDatahorareg" for="ipmDatahorareg" value="Registro"  />
-                    <p:inputText id="ipmDatahorareg" value="#{usuarioController.selected.dtaRegistro}"  disabled="true">
-                        <f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
+                    <p:outputLabel id="oplDataCadastro" for="iptDataCadastro" value="Data Cadastro"  />
+                    <p:inputText id="iptDataCadastro" value="#{planoSaudeController.selected.dataCadastro}"  disabled="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
                     </p:inputText>
 
                     <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
-                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                    <p:inputText id="iptNome" size="50" label="Nome" required="true" 
                                  requiredMessage="O atributo nome é obrigatório"
-                                 value="#{usuarioController.selected.nome}" maxlength="50" />
+                                 value="#{planoSaudeController.selected.nome}" maxlength="100" />
 
-                    <p:outputLabel id="oplDataNascimento" for="ipmDataNascimento" value="Data de Nascimento"  />
-                    <p:inputMask id="ipmDataNascimento" value="#{usuarioController.selected.dtaNascimento}" 
-                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de nascimento é obrigatório">
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
-                    </p:inputMask>
+                    <p:outputLabel id="oplCodigoANS" value="Código ANS:" for="iptCodigoANS"/>
+                    <p:inputText id="iptCodigoANS" size="20" label="Código ANS" required="true" 
+                                 requiredMessage="O atributo código ANS é obrigatório"
+                                 value="#{planoSaudeController.selected.codigoANS}" maxlength="20" />
 
-                    <p:outputLabel id="oplEmail" value="Email:" for="iptEmail"/>
-                    <p:inputText id="iptEmail" size="40" label="Nome" required="true" 
-                                 requiredMessage="O atributo email é obrigatório" validatorMessage="Campo email é inválido"
-                                 value="#{usuarioController.selected.email}" maxlength="50" >
-                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
-                    </p:inputText>
-                    
-                    <p:outputLabel id="oplContato" value="Contato" for="iptContato"/>
-                    <p:inputMask id="iptContato" size="40" label="Contato" required="true"
-             requiredMessage="O atributo contato é obrigatório"
-             mask="(99) 9 9999-9999"
-             value="#{usuarioController.selected.contato}" />
+                    <p:outputLabel id="oplTipoPlano" value="Tipo do Plano:" for="iptTipoPlano"/>
+                    <p:selectOneMenu id="iptTipoPlano" value="#{planoSaudeController.selected.tipoPlano}" 
+                                     required="true" requiredMessage="O atributo tipo do plano é obrigatório!"
+                                     panelStyle="width:200px">
+                        <f:selectItem itemLabel="Selecione o tipo..."/>
+                        <f:selectItem itemLabel="Individual" itemValue="Individual"/>
+                        <f:selectItem itemLabel="Familiar" itemValue="Familiar"/>
+                        <f:selectItem itemLabel="Empresarial" itemValue="Empresarial"/>
+                        <f:selectItem itemLabel="Coletivo" itemValue="Coletivo"/>
+                    </p:selectOneMenu>
 
-                    <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
-                    <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
-                                 requiredMessage="O atributo senha é obrigatório"
-                                 value="#{usuarioController.selected.senha}" />
+                    <p:outputLabel id="oplValorMensal" value="Valor Mensal (R$):" for="iptValorMensal"/>
+                    <p:inputNumber id="iptValorMensal" value="#{planoSaudeController.selected.valorMensal}" 
+                                   required="true" requiredMessage="O valor mensal é obrigatório"
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.01"/>
 
-                    
-                    <p:outputLabel value="Cidade: " for="idCidade" />
-                    <p:selectOneMenu id="idCidade" value="#{usuarioController.selected.idCidade}" 
-                                     required="false" requiredMessage="O atributo cidade é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma cidade..."/>                        
-                        <f:selectItems value="#{cidadeController.cidadeAll()}"
-                                       var="idCidadeItem"
-                                       itemValue="#{idCidadeItem}"
-                                       itemLabel="#{idCidadeItem.nome}"/>
+                    <p:outputLabel id="oplCoparticipacao" value="Coparticipação (R$):" for="iptCoparticipacao"/>
+                    <p:inputNumber id="iptCoparticipacao" value="#{planoSaudeController.selected.coparticipacao}" 
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.00"/>
+
+                    <p:outputLabel value="Cobre Internação:" for="selCobreInternacao" />
+                    <p:selectOneMenu id="selCobreInternacao" value="#{planoSaudeController.selected.cobreInternacao}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
                     </p:selectOneMenu>
                     
-                     <p:outputLabel value="Função " for="idfuncao" />
-                    <p:selectOneMenu id="idfuncao" value="#{usuarioController.usuario.idFuncao}" 
-                                     required="false" requiredMessage="O atributo função é obrigatório!"
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma função..."/>                        
-                        <f:selectItems value="#{funcaoController.funcaoAll()}"
-                                       var="idfuncao"
-                                       itemValue="#{idfuncao}"
-                                       itemLabel="#{idfuncao.descricao}"/>
+                    <p:outputLabel value="Cobre Emergência:" for="selCobreEmergencia" />
+                    <p:selectOneMenu id="selCobreEmergencia" value="#{planoSaudeController.selected.cobreEmergencia}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
                     </p:selectOneMenu>
-                    
-                     <p:outputLabel value="Especialidade " for="idEspecialidade" />
-                    <p:selectOneMenu id="idEspecialidade" value="#{usuarioController.usuario.idEspecialidade}" 
-                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="Selecione uma especialidade..."/>                        
-                        <f:selectItems value="#{especialidadeController.especialidadeAll()}"
-                                       var="idEspecialidade"
-                                       itemValue="#{idEspecialidade}"
-                                       itemLabel="#{idEspecialidade.descricao}"/>
+                   
+                    <p:outputLabel value="Cobre Odontológico:" for="selCobreOdontologico" />
+                    <p:selectOneMenu id="selCobreOdontologico" value="#{planoSaudeController.selected.cobreOdontologico}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
                     </p:selectOneMenu>
-                     
-                     <p:outputLabel id="oplCrm" value="CRM" for="iptCrm"/>
-                    <p:inputText id="iptCrm" size="40" label="CRM" required="true"  
-                                 value="#{usuarioController.usuario.crm}" maxlength="50" >                     
-                    </p:inputText>
 
-                    <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
-                    <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
-                                     value="#{usuarioController.selected.observacao}"/>
+                    <p:outputLabel id="oplObservacoes" value="Observações:" for="txtObservacoes"/>
+                    <p:inputTextarea id="txtObservacoes" rows="4" cols="50" autoResize="false" 
+                                     value="#{planoSaudeController.selected.observacoes}"/>
 
                 </h:panelGrid>   
                 <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
                                  onclick="dlgEdit.hide()" icon="pi pi-save"
-                                 action="#{usuarioController.editarUsuario()}" />
+                                 action="#{planoSaudeController.editarPlanoSaude()}" />
             </h:form>
         </p:dialog>
 
-        <p:dialog header="Visualizar Detalhes do usuário" widgetVar="dlgView"  height="250" 
-                  width="500" showEffect="fade" modal="true">
+        <!-- Dialog para Visualizar Detalhes -->
+        <p:dialog header="Visualizar Detalhes do Plano de Saúde" widgetVar="dlgView"  height="500" 
+                  width="600" showEffect="fade" modal="true">
             <h:form id="formView">
-                <h:panelGrid id="pngView" columns="2" rendered="#{usuarioController.selected != null}">    
+                <h:panelGrid id="pngView" columns="2" rendered="#{planoSaudeController.selected != null}">    
                     <p:outputLabel value="ID:" />
-                    <p:outputLabel value="#{usuarioController.selected.cod}"  />
+                    <p:outputLabel value="#{planoSaudeController.selected.id}"  />
 
-                    <p:outputLabel value="Registro"  />
-                    <p:outputLabel value="#{usuarioController.selected.dtaRegistro}"  >
-                        <f:convertDateTime pattern="dd/MM/yy HH:mm"  />
+                    <p:outputLabel value="Data Cadastro:"  />
+                    <p:outputLabel value="#{planoSaudeController.selected.dataCadastro}"  >
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
                     </p:outputLabel>
 
-                    <p:outputLabel value="Nome: " />
-                    <p:outputLabel value="#{usuarioController.selected.nome}" />
-
-                    <p:outputLabel value="Data de Nascimento: "  />
-                    <p:outputLabel value="#{usuarioController.selected.dtaNascimento}" >
-                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    <p:outputLabel value="Data Atualização:"  />
+                    <p:outputLabel value="#{planoSaudeController.selected.dataAtualizacao}"  >
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
                     </p:outputLabel>
 
-                    <p:outputLabel value="Email: " />                    
-                    <p:outputLabel value="#{usuarioController.selected.email}" />
-                    
-                    <p:outputLabel value="Contato " />                    
-                    <p:outputLabel value="#{usuarioController.selected.contato}" />
-                    
-                    <p:outputLabel value="Cidade: "/>
-                    <p:outputLabel value="#{usuarioController.selected.idCidade.nome}" />
-                    
-                    <p:outputLabel value="Função "/>
-                    <p:outputLabel value="#{usuarioController.selected.idFuncao.descricao}" />
+                    <p:outputLabel value="Nome:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.nome}" />
 
-                    
-                    <p:outputLabel value="Especialidade "/>
-                    <p:outputLabel value="#{usuarioController.selected.idEspecialidade.descricao}" />
-                    
-                    <p:outputLabel value="CRM "/>
-                    <p:outputLabel value="#{usuarioController.selected.crm}" />
+                    <p:outputLabel value="Código ANS:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.codigoANS}" />
 
+                    <p:outputLabel value="Tipo do Plano:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.tipoPlano}" />
 
-                    <p:outputLabel value="Obervação:  "/>
-                    <p:outputLabel value="#{usuarioController.selected.observacao}"/>
+                    <p:outputLabel value="Valor Mensal:" />                    
+                    <p:outputLabel value="#{planoSaudeController.selected.valorMensal}">
+                        <f:convertNumber type="currency" currencySymbol="R$ "/>
+                    </p:outputLabel>
+                    
+                    <p:outputLabel value="Coparticipação:" />                    
+                    <p:outputLabel value="#{planoSaudeController.selected.coparticipacao}">
+                        <f:convertNumber type="currency" currencySymbol="R$ "/>
+                    </p:outputLabel>
+                    
+                    <p:outputLabel value="Cobre Internação:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.cobreInternacao}" />
+                    
+                    <p:outputLabel value="Cobre Emergência:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.cobreEmergencia}" />
+
+                    <p:outputLabel value="Cobre Odontológico:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.cobreOdontologico}" />
+
+                    <p:outputLabel value="Observações:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.observacoes}"/>
 
                 </h:panelGrid>   
             </h:form>
@@ -345,5 +344,3 @@
     </ui:define>
 
 </ui:composition>
-
-

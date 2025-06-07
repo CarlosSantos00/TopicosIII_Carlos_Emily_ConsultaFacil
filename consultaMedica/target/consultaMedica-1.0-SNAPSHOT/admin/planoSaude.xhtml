@@ -1,0 +1,346 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Planos de Saúde"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">            
+            <h:panelGroup id="pngList"> 
+                <p:growl id="growl" showDetail="true" />
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist" value="#{planoSaudeController.planoSaudeList}" var="item"   
+                       selectionMode="single" selection="#{planoSaudeController.selected}"
+                       widgetVar="datalistPlanoSaudeWidgetVar"
+                       rowKey="#{item.id}"
+                        paginator="true"
+                        paginatorPosition="bottom"
+                        rows="5"
+                        rowsPerPageTemplate="5,10,50,100"
+                        emptyMessage="Nenhum plano de saúde cadastrado...">
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+                        <p:column width="15%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Nome"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nome}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.codigoANS}" filterBy="#{item.codigoANS}">
+                            <f:facet name="header">
+                                <h:outputText value="Código ANS"/>
+                            </f:facet>
+                            <h:outputText value="#{item.codigoANS}"/>
+                        </p:column>
+                        
+                        <p:column width="12%" sortBy="#{item.tipoPlano}" filterBy="#{item.tipoPlano}">
+                            <f:facet name="header">
+                                <h:outputText value="Tipo do Plano"/>
+                            </f:facet>
+                            <h:outputText value="#{item.tipoPlano}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.valorMensal}">
+                            <f:facet name="header">
+                                <h:outputText value="Valor Mensal"/>
+                            </f:facet>
+                            <h:outputText value="#{item.valorMensal}">
+                                <f:convertNumber type="currency" currencySymbol="R$ "/>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column width="10%" sortBy="#{item.coparticipacao}">
+                            <f:facet name="header">
+                                <h:outputText value="Coparticipação"/>
+                            </f:facet>
+                            <h:outputText value="#{item.coparticipacao}">
+                                <f:convertNumber type="currency" currencySymbol="R$ "/>
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column width="8%" sortBy="#{item.cobreInternacao}" filterBy="#{item.cobreInternacao}">
+                            <f:facet name="header">
+                                <h:outputText value="Internação"/>
+                            </f:facet>
+                            <h:outputText value="#{item.cobreInternacao}"/>
+                        </p:column>
+                        
+                        <p:column width="8%" sortBy="#{item.cobreEmergencia}" filterBy="#{item.cobreEmergencia}">
+                            <f:facet name="header">
+                                <h:outputText value="Emergência"/>
+                            </f:facet>
+                            <h:outputText value="#{item.cobreEmergencia}"/>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.cobreOdontologico}" filterBy="#{item.cobreOdontologico}">
+                            <f:facet name="header">
+                                <h:outputText value="Odontológico"/>
+                            </f:facet>
+                            <h:outputText value="#{item.cobreOdontologico}"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.dataCadastro}">
+                            <f:facet name="header">
+                                <h:outputText value="Data Cadastro"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataCadastro}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="btnCreate" value="Incluir Plano"  icon="pi pi-file" 
+                                             actionListener="#{planoSaudeController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             onclick="PF('dlgCreate').show()"/>  
+
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Plano" 
+                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty planoSaudeController.selected}"/>
+
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Plano" 
+                                             actionListener="#{planoSaudeController.deletarPlanoSaude()}" update="frmList" 
+                                             disabled="#{empty planoSaudeController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnView" icon="pi pi-eye"  value="Detalhes do Plano" 
+                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             disabled="#{empty planoSaudeController.selected}"/>
+
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        <!-- Dialog para Incluir Plano -->
+        <p:dialog header="Novo Plano de Saúde" widgetVar="dlgCreate" height="600" width="700" showEffect="fade" modal="true">
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngCadastro" columns="2">   
+                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
+                    <p:inputText id="iptNome" size="50" label="Nome" required="true" 
+                                 requiredMessage="O atributo nome é obrigatório"
+                                 value="#{planoSaudeController.planoSaude.nome}" maxlength="100" />                    
+
+                    <p:outputLabel id="oplCodigoANS" value="Código ANS:" for="iptCodigoANS"/>
+                    <p:inputText id="iptCodigoANS" size="20" label="Código ANS" required="true" 
+                                 requiredMessage="O atributo código ANS é obrigatório"
+                                 value="#{planoSaudeController.planoSaude.codigoANS}" maxlength="20" />
+
+                    <p:outputLabel id="oplTipoPlano" value="Tipo do Plano:" for="iptTipoPlano"/>
+                    <p:selectOneMenu id="iptTipoPlano" value="#{planoSaudeController.planoSaude.tipoPlano}" 
+                                     required="true" requiredMessage="O atributo tipo do plano é obrigatório!"
+                                     panelStyle="width:200px">
+                        <f:selectItem itemLabel="Selecione o tipo..."/>
+                        <f:selectItem itemLabel="Individual" itemValue="Individual"/>
+                        <f:selectItem itemLabel="Familiar" itemValue="Familiar"/>
+                        <f:selectItem itemLabel="Empresarial" itemValue="Empresarial"/>
+                        <f:selectItem itemLabel="Coletivo" itemValue="Coletivo"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplValorMensal" value="Valor Mensal (R$):" for="iptValorMensal"/>
+                    <p:inputNumber id="iptValorMensal" value="#{planoSaudeController.planoSaude.valorMensal}" 
+                                   required="true" requiredMessage="O valor mensal é obrigatório"
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.01"/>
+                   
+                    <p:outputLabel id="oplCoparticipacao" value="Coparticipação (R$):" for="iptCoparticipacao"/>
+                    <p:inputNumber id="iptCoparticipacao" value="#{planoSaudeController.planoSaude.coparticipacao}" 
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.00"/>
+
+                    <p:outputLabel value="Cobre Internação:" for="selCobreInternacao" />
+                    <p:selectOneMenu id="selCobreInternacao" value="#{planoSaudeController.planoSaude.cobreInternacao}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel value="Cobre Emergência:" for="selCobreEmergencia" />
+                    <p:selectOneMenu id="selCobreEmergencia" value="#{planoSaudeController.planoSaude.cobreEmergencia}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
+                    </p:selectOneMenu>
+                   
+                    <p:outputLabel value="Cobre Odontológico:" for="selCobreOdontologico" />
+                    <p:selectOneMenu id="selCobreOdontologico" value="#{planoSaudeController.planoSaude.cobreOdontologico}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplObservacoes" value="Observações:" for="txtObservacoes"/>
+                    <p:inputTextarea id="txtObservacoes" rows="4" cols="50" autoResize="false" 
+                                     value="#{planoSaudeController.planoSaude.observacoes}"/>
+
+                </h:panelGrid>   
+                
+                <p:commandButton actionListener="#{planoSaudeController.adicionarPlanoSaude()}" 
+                                 icon="pi pi-save" value="Cadastrar" 
+                                 update=":frmList, CreateForm" 
+                                onclick="dlgCreate.hide()"/>
+                    
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialog para Editar Plano -->
+        <p:dialog header="Editar Plano de Saúde" widgetVar="dlgEdit"  height="650" width="700" showEffect="fade" modal="true">
+            <h:form id="formEdit">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngEdicao" columns="2" rendered="#{planoSaudeController.selected != null}">   
+                    <p:outputLabel id="oplId" value="ID:" for="iptId"/>
+                    <p:inputText id="iptId" size="10" label="ID" disabled="true"
+                                 value="#{planoSaudeController.selected.id}"  />
+
+                    <p:outputLabel id="oplDataCadastro" for="iptDataCadastro" value="Data Cadastro"  />
+                    <p:inputText id="iptDataCadastro" value="#{planoSaudeController.selected.dataCadastro}"  disabled="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                    </p:inputText>
+
+                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
+                    <p:inputText id="iptNome" size="50" label="Nome" required="true" 
+                                 requiredMessage="O atributo nome é obrigatório"
+                                 value="#{planoSaudeController.selected.nome}" maxlength="100" />
+
+                    <p:outputLabel id="oplCodigoANS" value="Código ANS:" for="iptCodigoANS"/>
+                    <p:inputText id="iptCodigoANS" size="20" label="Código ANS" required="true" 
+                                 requiredMessage="O atributo código ANS é obrigatório"
+                                 value="#{planoSaudeController.selected.codigoANS}" maxlength="20" />
+
+                    <p:outputLabel id="oplTipoPlano" value="Tipo do Plano:" for="iptTipoPlano"/>
+                    <p:selectOneMenu id="iptTipoPlano" value="#{planoSaudeController.selected.tipoPlano}" 
+                                     required="true" requiredMessage="O atributo tipo do plano é obrigatório!"
+                                     panelStyle="width:200px">
+                        <f:selectItem itemLabel="Selecione o tipo..."/>
+                        <f:selectItem itemLabel="Individual" itemValue="Individual"/>
+                        <f:selectItem itemLabel="Familiar" itemValue="Familiar"/>
+                        <f:selectItem itemLabel="Empresarial" itemValue="Empresarial"/>
+                        <f:selectItem itemLabel="Coletivo" itemValue="Coletivo"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplValorMensal" value="Valor Mensal (R$):" for="iptValorMensal"/>
+                    <p:inputNumber id="iptValorMensal" value="#{planoSaudeController.selected.valorMensal}" 
+                                   required="true" requiredMessage="O valor mensal é obrigatório"
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.01"/>
+
+                    <p:outputLabel id="oplCoparticipacao" value="Coparticipação (R$):" for="iptCoparticipacao"/>
+                    <p:inputNumber id="iptCoparticipacao" value="#{planoSaudeController.selected.coparticipacao}" 
+                                   symbol="R$ " decimalSeparator="," thousandSeparator="."
+                                   decimalPlaces="2" minValue="0.00"/>
+
+                    <p:outputLabel value="Cobre Internação:" for="selCobreInternacao" />
+                    <p:selectOneMenu id="selCobreInternacao" value="#{planoSaudeController.selected.cobreInternacao}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel value="Cobre Emergência:" for="selCobreEmergencia" />
+                    <p:selectOneMenu id="selCobreEmergencia" value="#{planoSaudeController.selected.cobreEmergencia}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
+                    </p:selectOneMenu>
+                   
+                    <p:outputLabel value="Cobre Odontológico:" for="selCobreOdontologico" />
+                    <p:selectOneMenu id="selCobreOdontologico" value="#{planoSaudeController.selected.cobreOdontologico}" 
+                                     panelStyle="width:150px">
+                        <f:selectItem itemLabel="Selecione..."/>
+                        <f:selectItem itemLabel="Sim" itemValue="Sim"/>
+                        <f:selectItem itemLabel="Não" itemValue="Não"/>
+                        <f:selectItem itemLabel="Parcial" itemValue="Parcial"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplObservacoes" value="Observações:" for="txtObservacoes"/>
+                    <p:inputTextarea id="txtObservacoes" rows="4" cols="50" autoResize="false" 
+                                     value="#{planoSaudeController.selected.observacoes}"/>
+
+                </h:panelGrid>   
+                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
+                                 onclick="dlgEdit.hide()" icon="pi pi-save"
+                                 action="#{planoSaudeController.editarPlanoSaude()}" />
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialog para Visualizar Detalhes -->
+        <p:dialog header="Visualizar Detalhes do Plano de Saúde" widgetVar="dlgView"  height="500" 
+                  width="600" showEffect="fade" modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2" rendered="#{planoSaudeController.selected != null}">    
+                    <p:outputLabel value="ID:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.id}"  />
+
+                    <p:outputLabel value="Data Cadastro:"  />
+                    <p:outputLabel value="#{planoSaudeController.selected.dataCadastro}"  >
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Data Atualização:"  />
+                    <p:outputLabel value="#{planoSaudeController.selected.dataAtualizacao}"  >
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Nome:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.nome}" />
+
+                    <p:outputLabel value="Código ANS:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.codigoANS}" />
+
+                    <p:outputLabel value="Tipo do Plano:" />
+                    <p:outputLabel value="#{planoSaudeController.selected.tipoPlano}" />
+
+                    <p:outputLabel value="Valor Mensal:" />                    
+                    <p:outputLabel value="#{planoSaudeController.selected.valorMensal}">
+                        <f:convertNumber type="currency" currencySymbol="R$ "/>
+                    </p:outputLabel>
+                    
+                    <p:outputLabel value="Coparticipação:" />                    
+                    <p:outputLabel value="#{planoSaudeController.selected.coparticipacao}">
+                        <f:convertNumber type="currency" currencySymbol="R$ "/>
+                    </p:outputLabel>
+                    
+                    <p:outputLabel value="Cobre Internação:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.cobreInternacao}" />
+                    
+                    <p:outputLabel value="Cobre Emergência:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.cobreEmergencia}" />
+
+                    <p:outputLabel value="Cobre Odontológico:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.cobreOdontologico}" />
+
+                    <p:outputLabel value="Observações:"/>
+                    <p:outputLabel value="#{planoSaudeController.selected.observacoes}"/>
+
+                </h:panelGrid>   
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

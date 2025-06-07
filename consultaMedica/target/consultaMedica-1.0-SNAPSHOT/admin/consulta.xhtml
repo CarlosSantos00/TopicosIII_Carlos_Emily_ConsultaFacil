@@ -68,15 +68,16 @@
                                                        'status-cancelada'}"/>
                         </p:column>
 
-                        <p:column width="23%" sortBy="#{item.observacoes}">
-                            <f:facet name="header">
-                                <h:outputText value="Observações"/>
-                            </f:facet>
-                            <h:outputText value="#{item.observacoes}" 
-                                          rendered="#{item.observacoes}"/>
-                            <h:outputText value="#{item.observacoes}" 
-                                          rendered="#{item.observacoes}"/>
-                        </p:column>
+<p:column width="23%" sortBy="#{item.observacoes}">
+    <f:facet name="header">
+        <h:outputText value="Observações"/>
+    </f:facet>
+    <h:outputText value="#{item.observacoes}" 
+                  rendered="#{not empty item.observacoes}"/>
+    <h:outputText value="-" 
+                  rendered="#{empty item.observacoes}" 
+                  style="color: #999; font-style: italic;"/>
+</p:column>
 
                         <f:facet name="footer">
                             <p:commandButton id="btnCreate" value="Nova Consulta"  icon="pi pi-plus" 

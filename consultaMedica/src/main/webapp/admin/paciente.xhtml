@@ -15,15 +15,19 @@
                 <p:growl id="growl" showDetail="true" />
                 <p:fieldset toggleable="true">
                     <p:dataTable id="datalist" value="#{pacienteController.pacienteList}" var="item"   
-                       selectionMode="single" selection="#{pacienteController.selected}"
+                       selectionMode="single" 
+                       selection="#{pacienteController.selected}"
                        widgetVar="datalistPacienteWidgetVar"
                        rowKey="#{item.id}"
-                        paginator="true"
-                        paginatorPosition="bottom"
-                        rows="5"
-                        rowsPerPageTemplate="5,10,50,100"
-                        emptyMessage="Nenhum paciente cadastrado...">
+                       paginator="true"
+                       paginatorPosition="bottom"
+                       rows="5"
+                       rowsPerPageTemplate="5,10,50,100"
+                       emptyMessage="Nenhum paciente cadastrado...">
                        
+                        <!-- Evento de seleção para atualizar os botões -->
+                        <p:ajax event="rowSelect" update="btnEdit btnDelete btnView" />
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView" />
 
                         <p:column width="15%" sortBy="#{item.nome}" filterBy="#{item.nome}">
                             <f:facet name="header">
@@ -76,31 +80,35 @@
                             <h:outputText value="#{item.cidade.nome}"/>
                         </p:column>
 
-
                         <f:facet name="footer">
                            <p:commandButton id="btnCreate" value="Novo Paciente" icon="pi pi-plus" 
-                 action="#{pacienteController.prepareAdicionar()}"
-                 update=":CreateForm"
-                 oncomplete="PF('dlgCreate').show()"
-                 immediate="true"/>
+                                            action="#{pacienteController.prepareAdicionar()}"
+                                            update=":CreateForm"
+                                            oncomplete="PF('dlgCreate').show()"
+                                            immediate="true"/>
 
                             <p:commandButton id="btnEdit" icon="pi pi-pencil" value="Editar" 
-                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             actionListener="#{pacienteController.prepareEditar()}"
+                                             update=":formEdit" 
+                                             oncomplete="PF('dlgEdit').show()" 
                                              disabled="#{empty pacienteController.selected}"/>
 
                             <p:commandButton id="btnDelete" icon="pi pi-trash" value="Excluir" 
-                                             actionListener="#{pacienteController.deletarPaciente()}" update="frmList" 
+                                             actionListener="#{pacienteController.deletarPaciente()}" 
+                                             update="frmList" 
                                              disabled="#{empty pacienteController.selected}">
                                 <p:confirm header="Confirmação" message="Deseja realmente excluir este paciente?" 
                                            icon="pi pi-exclamation-triangle" />
                             </p:commandButton>
 
                             <p:commandButton id="btnView" icon="pi pi-eye" value="Detalhes" 
-                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             update=":formView" 
+                                             oncomplete="PF('dlgView').show()" 
                                              disabled="#{empty pacienteController.selected}"/>
                         </f:facet>
                     </p:dataTable>
                 </p:fieldset>
+                
                 <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                     <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
                     <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
@@ -249,48 +257,183 @@
         </p:dialog>
 
         <!-- Diálogo de Edição -->
-        <p:dialog header="Editar Paciente" widgetVar="dlgEdit" modal="true" height="600" width="800" resizable="true">
-            <h:form id="formEdit">
-                <p:growl id="growl" showDetail="true" />
-                <div style="padding: 20px;" rendered="#{pacienteController.selected != null}">
-                    <p:panelGrid columns="2" layout="grid" style="width:100%">
-                        <p:outputLabel value="Nome Completo *" for="editNome"/>
-                        <p:inputText id="editNome" value="#{pacienteController.selected.nome}" required="true" maxlength="100"/>
-
-                        <p:outputLabel value="CPF *" for="editCpf"/>
-                        <p:inputMask id="editCpf" value="#{pacienteController.selected.cpf}" mask="999.999.999-99" required="true"/>
-
+<p:dialog header="Editar Paciente" widgetVar="dlgEdit" modal="true" height="600" width="800" resizable="true">
+    <h:form id="formEdit">
+        <p:growl id="growlEdit" showDetail="true" />
         
-                    </p:panelGrid>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px;" rendered="#{pacienteController.selected != null}">
+            <!-- Coluna Esquerda -->
+            <div>
+                <h3>Dados Pessoais</h3>
 
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p:commandButton value="Salvar" actionListener="#{pacienteController.editarPaciente()}" 
-                                        icon="pi pi-save" update=":frmList,:formEdit" 
-                                        oncomplete="if(!args.validationFailed) PF('dlgEdit').hide()"
-                                        styleClass="ui-button-success"/>
-                        <p:commandButton value="Cancelar" onclick="PF('dlgEdit').hide()" 
-                                        icon="pi pi-times" type="button" 
-                                        styleClass="ui-button-secondary" style="margin-left: 10px;"/>
-                    </div>
+                <p:outputLabel for="editNome" value="Nome Completo *" />
+                <p:inputText id="editNome" value="#{pacienteController.selected.nome}" required="true" maxlength="100" style="width:100%;"/>
+
+                <p:outputLabel for="editCpf" value="CPF *" />
+                <p:inputMask id="editCpf" value="#{pacienteController.selected.cpf}" mask="999.999.999-99" required="true" style="width:100%;"/>
+
+                <p:outputLabel for="editRg" value="RG" />
+                <p:inputText id="editRg" value="#{pacienteController.selected.rg}" maxlength="20" style="width:100%;"/>
+
+                <div style="display: flex; gap: 20px;">
+    <div style="flex: 1;">
+        <p:outputLabel for="editDataNascimento" value="Data Nascimento *" />
+        <p:calendar id="editDataNascimento" value="#{pacienteController.selected.dataNascimento}" 
+                    pattern="dd/MM/yyyy" required="true" style="width:100%;" />
+    </div>
+    
+    <div style="flex: 1;">
+        <p:outputLabel for="editSexo" value="Sexo *" />
+        <p:selectOneMenu id="editSexo" value="#{pacienteController.selected.sexo}" required="true" style="width:100%;">
+            <f:selectItem itemLabel="Selecione" itemValue="" />
+            <f:selectItem itemLabel="Masculino" itemValue="M" />
+            <f:selectItem itemLabel="Feminino" itemValue="F" />
+            <f:selectItem itemLabel="Outro" itemValue="O" />
+        </p:selectOneMenu>
+    </div>
+</div>
+
+                <p:outputLabel for="editEstadoCivil" value="Estado Civil" />
+                <p:inputText id="editEstadoCivil" value="#{pacienteController.selected.estadoCivil}" maxlength="20" style="width:100%;"/>
+
+                <p:outputLabel for="editProfissao" value="Profissão" />
+                <p:inputText id="editProfissao" value="#{pacienteController.selected.profissao}" maxlength="50" style="width:100%;"/>
+
+                <h3>Contato</h3>
+
+                <p:outputLabel for="editCelular" value="Celular" />
+                <p:inputMask id="editCelular" value="#{pacienteController.selected.celular}" mask="(99) 9 9999-9999" style="width:100%;"/>
+
+                <p:outputLabel for="editEmail" value="Email" />
+                <p:inputText id="editEmail" value="#{pacienteController.selected.email}" maxlength="100" style="width:100%;">
+                </p:inputText>
+            </div>
+
+            <!-- Coluna Direita -->
+            <div>
+                <h3>Endereço</h3>
+
+                <p:outputLabel for="editEndereco" value="Endereço" />
+                <p:inputText id="editEndereco" value="#{pacienteController.selected.endereco}" maxlength="150" style="width:100%;"/>
+
+                <p:outputLabel for="editNumero" value="Número" />
+                <p:inputText id="editNumero" value="#{pacienteController.selected.numero}" maxlength="10" style="width:100%;"/>
+
+                <p:outputLabel for="editBairro" value="Bairro" />
+                <p:inputText id="editBairro" value="#{pacienteController.selected.bairro}" maxlength="50" style="width:100%;"/>
+
+                <p:outputLabel for="editCep" value="CEP" />
+                <p:inputMask id="editCep" value="#{pacienteController.selected.cep}" mask="99999-999" style="width:100%;"/>
+
+       
+               
+               
+
+                <h3>Informações de Saúde</h3>
+
+                <p:outputLabel for="editTipoSanguineo" value="Tipo Sanguíneo" />
+                <p:selectOneMenu id="editTipoSanguineo" value="#{pacienteController.selected.tipoSanguineo}" style="width:100%;">
+                    <f:selectItem itemLabel="Selecione" itemValue="" />
+                    <f:selectItem itemLabel="A+" itemValue="A+"/>
+                    <f:selectItem itemLabel="A-" itemValue="A-"/>
+                    <f:selectItem itemLabel="B+" itemValue="B+"/>
+                    <f:selectItem itemLabel="B-" itemValue="B-"/>
+                    <f:selectItem itemLabel="AB+" itemValue="AB+"/>
+                    <f:selectItem itemLabel="AB-" itemValue="AB-"/>
+                    <f:selectItem itemLabel="O+" itemValue="O+"/>
+                    <f:selectItem itemLabel="O-" itemValue="O-"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="editAlergias" value="Alergias" />
+                <p:inputTextarea id="editAlergias" value="#{pacienteController.selected.alergias}" rows="2" style="width:100%;"/>
+
+                <p:outputLabel for="editMedicamentosUso" value="Medicamentos em Uso" />
+                <p:inputTextarea id="editMedicamentosUso" value="#{pacienteController.selected.medicamentosUso}" rows="2" style="width:100%;"/>
+            </div>
+        </div>
+
+        <div style="padding: 0 20px 20px 20px;" rendered="#{pacienteController.selected != null}">
+            <h3>Observações</h3>
+            <p:inputTextarea id="editObservacoes" value="#{pacienteController.selected.observacoes}" rows="3" style="width:100%; margin-bottom:15px;"/>
+
+            <h3>Contato de Emergência</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <p:outputLabel for="editContatoEmergenciaNome" value="Nome do Contato" />
+                    <p:inputText id="editContatoEmergenciaNome" value="#{pacienteController.selected.contatoEmergenciaNome}" maxlength="100" style="width:100%;"/>
                 </div>
-            </h:form>
-        </p:dialog>
-
-        <!-- Diálogo de Visualização -->
-        <p:dialog header="Detalhes do Paciente" widgetVar="dlgView" modal="true" height="500" width="700">
-            <h:form id="formView">
-                <div style="padding: 20px;" rendered="#{pacienteController.selected != null}">
-                    <p:panelGrid columns="2" layout="grid" style="width:100%">
-                        <p:outputLabel value="Nome:"/>
-                        <p:outputLabel value="#{pacienteController.selected.nome}"/>
-
-                        <p:outputLabel value="CPF:"/>
-                        <p:outputLabel value="#{pacienteController.selected.cpf}"/>
-
-                        
-                    </p:panelGrid>
+                <div>
+                    <p:outputLabel for="editContatoEmergenciaParentesco" value="Parentesco" />
+                    <p:inputText id="editContatoEmergenciaParentesco" value="#{pacienteController.selected.contatoEmergenciaParentesco}" maxlength="30" style="width:100%;"/>
                 </div>
-            </h:form>
-        </p:dialog>
+                <div>
+                    <p:outputLabel for="editContatoEmergenciaTelefone" value="Telefone" />
+                    <p:inputMask id="editContatoEmergenciaTelefone" value="#{pacienteController.selected.contatoEmergenciaTelefone}" mask="(99) 9999-9999" style="width:100%;"/>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <p:commandButton value="Salvar" actionListener="#{pacienteController.editarPaciente()}"
+                             icon="pi pi-save" update=":frmList,:formEdit"
+                             oncomplete="if(!args.validationFailed) PF('dlgEdit').hide()"
+                             styleClass="ui-button-success"/>
+            <p:commandButton value="Cancelar" onclick="PF('dlgEdit').hide()"
+                             icon="pi pi-times" type="button"
+                             styleClass="ui-button-secondary" style="margin-left:10px;"/>
+        </div>
+    </h:form>
+</p:dialog>
+
+<!-- Diálogo de Visualização -->
+<p:dialog header="Detalhes do Paciente" widgetVar="dlgView" modal="true" height="600" width="800">
+    <h:form id="formView">
+        <div style="padding:20px;" rendered="#{pacienteController.selected != null}">
+            <h3>Dados Pessoais</h3>
+            <p:panelGrid columns="2" style="width:100%;">
+                <p:outputLabel value="Nome:" /><p:outputLabel value="#{pacienteController.selected.nome}" />
+                <p:outputLabel value="CPF:" /><p:outputLabel value="#{pacienteController.selected.cpf}" />
+                <p:outputLabel value="RG:" /><p:outputLabel value="#{pacienteController.selected.rg}" />
+                <p:outputLabel value="Nascimento:" /><p:outputLabel value="#{pacienteController.selected.dataNascimento}">
+                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                </p:outputLabel>
+                <p:outputLabel value="Sexo:" /><p:outputLabel value="#{pacienteController.selected.sexo}" />
+                <p:outputLabel value="Estado Civil:" /><p:outputLabel value="#{pacienteController.selected.estadoCivil}" />
+                <p:outputLabel value="Profissão:" /><p:outputLabel value="#{pacienteController.selected.profissao}" />
+            </p:panelGrid>
+
+            <h3>Contato</h3>
+            <p:panelGrid columns="2" style="width:100%;">
+                <p:outputLabel value="Celular:" /><p:outputLabel value="#{pacienteController.selected.celular}" />
+                <p:outputLabel value="Email:" /><p:outputLabel value="#{pacienteController.selected.email}" />
+            </p:panelGrid>
+
+            <h3>Endereço</h3>
+            <p:panelGrid columns="2" style="width:100%;">
+                <p:outputLabel value="Endereço:" /><p:outputLabel value="#{pacienteController.selected.endereco}, #{pacienteController.selected.numero}" />
+                <p:outputLabel value="Bairro:" /><p:outputLabel value="#{pacienteController.selected.bairro}" />
+                <p:outputLabel value="CEP:" /><p:outputLabel value="#{pacienteController.selected.cep}" />
+                <p:outputLabel value="Cidade/UF:" /><p:outputLabel value="#{pacienteController.selected.cidade.nome}/#{pacienteController.selected.uf}" />
+            </p:panelGrid>
+
+            <h3>Saúde</h3>
+            <p:panelGrid columns="2" style="width:100%;">
+                <p:outputLabel value="Tipo Sanguíneo:" /><p:outputLabel value="#{pacienteController.selected.tipoSanguineo}" />
+                <p:outputLabel value="Alergias:" /><p:outputLabel value="#{pacienteController.selected.alergias}" />
+                <p:outputLabel value="Medicamentos em Uso:" /><p:outputLabel value="#{pacienteController.selected.medicamentosUso}" />
+            </p:panelGrid>
+
+            <h3>Observações</h3>
+            <p:outputLabel value="#{pacienteController.selected.observacoes}" style="white-space: pre-wrap;" />
+
+            <h3>Contato de Emergência</h3>
+            <p:panelGrid columns="2" style="width:100%;">
+                <p:outputLabel value="Nome:" /><p:outputLabel value="#{pacienteController.selected.contatoEmergenciaNome}" />
+                <p:outputLabel value="Parentesco:" /><p:outputLabel value="#{pacienteController.selected.contatoEmergenciaParentesco}" />
+                <p:outputLabel value="Telefone:" /><p:outputLabel value="#{pacienteController.selected.contatoEmergenciaTelefone}" />
+            </p:panelGrid>
+        </div>
+    </h:form>
+</p:dialog>
     </ui:define>
 </ui:composition>

@@ -121,16 +121,25 @@ public class PacienteController implements Serializable {
     }
 
     public void editarPaciente() {
-        try {
-            if (selected == null) {
-                addErrorMessage("Nenhum paciente selecionado para edição.");
-                return;
-            }
-            persist(PersistAction.UPDATE, "Paciente alterado com sucesso!");
-        } catch (Exception e) {
-            addErrorMessage("Erro ao editar paciente: " + e.getLocalizedMessage());
+    try {
+        if (selected == null) {
+            addErrorMessage("Nenhum paciente selecionado para edição.");
+            return;
         }
+        
+        // Garantir que a cidade seja carregada corretamente se um ID foi selecionado
+        if (selected.getCidade() != null && selected.getCidade().getId() != null) {
+            // A cidade será resolvida automaticamente pelo JPA através do ID
+            System.out.println("Editando paciente com cidade ID: " + selected.getCidade().getId());
+        }
+        
+        persist(PersistAction.UPDATE, "Paciente alterado com sucesso!");
+        
+    } catch (Exception e) {
+        addErrorMessage("Erro ao editar paciente: " + e.getLocalizedMessage());
+        e.printStackTrace();
     }
+}
 
     public void deletarPaciente() {
         try {
@@ -217,4 +226,23 @@ public class PacienteController implements Serializable {
             ex.printStackTrace();
         }
     }
+    
+    public void prepareEditar() {
+    if (selected != null) {
+        // Garantir que objetos aninhados estejam inicializados
+        initializePaciente(selected);
+        
+        // Se a cidade estiver nula ou sem ID, inicializar
+        if (selected.getCidade() == null) {
+            selected.setCidade(new CidadeEntity());
+        }
+        
+        // Debug para verificar se os dados estão sendo carregados
+        System.out.println("Preparando edição para: " + selected.getNome());
+        System.out.println("CPF: " + selected.getCpf());
+        System.out.println("Cidade: " + (selected.getCidade() != null ? selected.getCidade().getNome() : "null"));
+    } else {
+        addErrorMessage("Nenhum paciente selecionado para edição.");
+    }
+}
 }

@@ -107,7 +107,7 @@ public class PacienteEntity implements Serializable {
     private Date dataAtualizacao;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "cidade_id", referencedColumnName = "id")
+    @JoinColumn(name = "cidade", referencedColumnName = "id")
     private CidadeEntity cidade;
 
     // Construtor padrão

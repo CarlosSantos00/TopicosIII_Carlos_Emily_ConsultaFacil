@@ -244,5 +244,6 @@ public class PacienteController implements Serializable {
     } else {
         addErrorMessage("Nenhum paciente selecionado para edição.");
     }
+    
 }
 }

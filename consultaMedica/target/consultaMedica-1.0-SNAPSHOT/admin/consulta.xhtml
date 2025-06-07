@@ -1,0 +1,339 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Consultas Médicas"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">            
+            <h:panelGroup id="pngList"> 
+                <p:growl id="growl" showDetail="true" />
+                
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist" value="#{consultaController.consultaList}" var="item"   
+                       selectionMode="single" selection="#{consultaController.selected}"
+                       widgetVar="datalistConsultaWidgetVar"
+                       rowKey="#{item.id}"
+                        paginator="true"
+                        paginatorPosition="bottom"
+                        rows="10"
+                        rowsPerPageTemplate="10,20,50,100"
+                        emptyMessage="Nenhuma consulta cadastrada...">
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
+
+                        <p:column width="10%" sortBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="20%" sortBy="#{item.paciente.nome}" filterBy="#{item.paciente.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Paciente"/>
+                            </f:facet>
+                            <h:outputText value="#{item.paciente.nome}"/>
+                        </p:column>
+
+                        <p:column width="20%" sortBy="#{item.medico.nome}" filterBy="#{item.medico.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Médico"/>
+                            </f:facet>
+                            <h:outputText value="#{item.medico.nome}"/>
+                        </p:column>
+
+                        <p:column width="15%" sortBy="#{item.dataHora}">
+                            <f:facet name="header">
+                                <h:outputText value="Data/Hora"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataHora}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.status}" filterBy="#{item.status}">
+                            <f:facet name="header">
+                                <h:outputText value="Status"/>
+                            </f:facet>
+                            <h:outputText value="#{item.status}" 
+                                          styleClass="#{item.status == 'Agendada' ? 'status-agendada' : 
+                                                       item.status == 'Confirmada' ? 'status-confirmada' : 
+                                                       item.status == 'Realizada' ? 'status-realizada' : 
+                                                       'status-cancelada'}"/>
+                        </p:column>
+
+                        <p:column width="23%" sortBy="#{item.observacoes}">
+                            <f:facet name="header">
+                                <h:outputText value="Observações"/>
+                            </f:facet>
+                            <h:outputText value="#{item.observacoes}" 
+                                          rendered="#{item.observacoes}"/>
+                            <h:outputText value="#{item.observacoes}" 
+                                          rendered="#{item.observacoes}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="btnCreate" value="Nova Consulta"  icon="pi pi-plus" 
+                                             actionListener="#{consultaController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             onclick="PF('dlgCreate').show()"/>  
+
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar" 
+                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty consultaController.selected}"/>
+
+                            <p:commandButton id="btnConfirmar" icon="pi pi-check"  value="Confirmar" 
+                                             actionListener="#{consultaController.confirmarConsulta()}" 
+                                             update="frmList" 
+                                             disabled="#{empty consultaController.selected or consultaController.selected.status != 'Agendada'}">
+                                <p:confirm header="Confirmar Consulta" message="Deseja confirmar esta consulta?" 
+                                           icon="ui-icon-info"  />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnCancelar" icon="pi pi-times"  value="Cancelar" 
+                                             actionListener="#{consultaController.cancelarConsulta()}" 
+                                             update="frmList" 
+                                             disabled="#{empty consultaController.selected or (consultaController.selected.status != 'Agendada' and consultaController.selected.status != 'Confirmada')}">
+                                <p:confirm header="Cancelar Consulta" message="Deseja cancelar esta consulta?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir" 
+                                             actionListener="#{consultaController.deletarConsulta()}" update="frmList" 
+                                             disabled="#{empty consultaController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <p:commandButton id="btnView" icon="pi pi-eye"  value="Detalhes" 
+                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             disabled="#{empty consultaController.selected}"/>
+
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        <!-- Dialog para Nova Consulta -->
+        <p:dialog header="Nova Consulta Médica" widgetVar="dlgCreate" height="500" width="600" showEffect="fade" modal="true">
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngCadastro" columnClasses="label,value">   
+
+                    <!-- Paciente -->
+                    <p:outputLabel value="Paciente:" for="selPaciente" />
+                    <h:panelGroup>
+                        <p:selectOneMenu id="selPaciente" value="#{consultaController.pacienteIdSelecionado}" 
+                                         required="true" requiredMessage="O paciente é obrigatório"
+                                         style="width:150%"  filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione o paciente..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{pacienteController.pacienteList}" 
+                                           var="paciente" 
+                                           itemLabel="#{paciente.nome} - #{paciente.cpf}" 
+                                           itemValue="#{paciente.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="selPaciente" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Médico -->
+                    <p:outputLabel value="Médico:" for="selMedico"/>
+                    <h:panelGroup>
+                        <p:selectOneMenu id="selMedico" value="#{consultaController.medicoIdSelecionado}" 
+                                         required="true" requiredMessage="O médico é obrigatório"
+                                         style="width:150%" filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione o médico..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{usuarioController.usuarioList}" 
+                                           var="medico" 
+                                           itemLabel="#{medico.nome} - #{medico.idEspecialidade.descricao}" 
+                                           itemValue="#{medico.cod}"/>
+                        </p:selectOneMenu>
+                        <p:message for="selMedico" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Data e Hora -->
+                    <p:outputLabel value="Data/Hora:" for="dtConsulta"/>
+                    <h:panelGroup>
+                        <p:calendar id="dtConsulta" value="#{consultaController.consulta.dataHoraAsDate}" 
+                                    showOn="button" pattern="dd/MM/yyyy HH:mm" 
+                                    mask="99/99/9999 99:99" timeOnly="false"
+                                    required="true" requiredMessage="A data/hora é obrigatória"
+                                    stepMinute="15" mindate="#{now}" style="width:150%"/>
+                        <p:message for="dtConsulta" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Status -->
+                    <p:outputLabel value="Status:" for="selStatusNovo"/>
+                    <p:selectOneMenu id="selStatusNovo" value="#{consultaController.consulta.status}" 
+                                     style="width:150%">
+                        <f:selectItem itemLabel="Agendada" itemValue="Agendada"/>
+                        
+                    </p:selectOneMenu>
+
+                    <!-- Observações -->
+                    <p:outputLabel value="Observações:" for="txtObservacoes"/>
+                    <p:inputTextarea id="txtObservacoes" rows="4" style="width:150%" autoResize="false" 
+                                     value="#{consultaController.consulta.observacoes}"/>
+
+                </h:panelGrid>
+                
+                <p:commandButton actionListener="#{consultaController.adicionarConsulta()}" 
+                                 icon="pi pi-save" value="Agendar Consulta" 
+                                 update=":frmList, CreateForm" 
+                                 onclick="dlgCreate.hide()" style="margin-top:10px"/>
+                    
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialog para Editar Consulta -->
+        <p:dialog header="Editar Consulta Médica" widgetVar="dlgEdit" height="600" width="650" showEffect="fade" modal="true">
+            <h:form id="formEdit">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngEdicao" columns="2" columnClasses="label,value" rendered="#{consultaController.selected != null}">   
+                    
+                    <p:outputLabel value="ID:" for="iptId"/>
+                    <p:inputText id="iptId" size="10" label="ID" disabled="true"
+                                 value="#{consultaController.selected.id}" style="width:150%"/>
+
+                    <!-- Paciente -->
+                    <p:outputLabel value="Paciente:" for="selPacienteEdit"/>
+                    <h:panelGroup>
+                        <p:selectOneMenu id="selPacienteEdit" value="#{consultaController.pacienteIdSelecionado}" 
+                                         required="true" requiredMessage="O paciente é obrigatório"
+                                         style="width:150%" filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione o paciente..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{pacienteController.pacienteList}" 
+                                           var="paciente" 
+                                           itemLabel="#{paciente.nome} - #{paciente.cpf}" 
+                                           itemValue="#{paciente.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="selPacienteEdit" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Médico -->
+                    <p:outputLabel value="Médico:" for="selMedicoEdit"/>
+                    <h:panelGroup>
+                        <p:selectOneMenu id="selMedicoEdit" value="#{consultaController.medicoIdSelecionado}" 
+                                         required="true" requiredMessage="O médico é obrigatório"
+                                         style="width:150%" filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione o médico..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{usuarioController.usuarioList}" 
+                                           var="medico" 
+                                           itemLabel="#{medico.nome} - #{medico.idEspecialidade.descricao}" 
+                                           itemValue="#{medico.cod}"/>
+                        </p:selectOneMenu>
+                        <p:message for="selMedicoEdit" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Data e Hora -->
+                    <p:outputLabel value="Data/Hora:" for="dtConsultaEdit"/>
+                    <h:panelGroup>
+                        <p:calendar id="dtConsultaEdit" value="#{consultaController.selected.dataHora}" 
+                                    showOn="button" pattern="dd/MM/yyyy HH:mm" 
+                                    mask="99/99/9999 99:99" timeOnly="false"
+                                    required="true" requiredMessage="A data/hora é obrigatória"
+                                    stepMinute="15" style="width:150%"/>
+                        <p:message for="dtConsultaEdit" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Status -->
+                    <p:outputLabel value="Status:" for="selStatusEdit"/>
+                    <p:selectOneMenu id="selStatusEdit" value="#{consultaController.selected.status}" 
+                                     style="width:150%">
+                        <f:selectItem itemLabel="Agendada" itemValue="Agendada"/>
+                        <f:selectItem itemLabel="Confirmada" itemValue="Confirmada"/>
+                        <f:selectItem itemLabel="Realizada" itemValue="Realizada"/>
+                        <f:selectItem itemLabel="Cancelada" itemValue="Cancelada"/>
+                    </p:selectOneMenu>
+
+                    <!-- Observações -->
+                    <p:outputLabel value="Observações:" for="txtObservacoesEdit"/>
+                    <p:inputTextarea id="txtObservacoesEdit" rows="4" style="width:150%" autoResize="false" 
+                                     value="#{consultaController.selected.observacoes}"/>
+
+                </h:panelGrid>
+                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
+                                 onclick="dlgEdit.hide()" icon="pi pi-save" style="margin-top:10px"
+                                 action="#{consultaController.editarConsulta()}" />
+            </h:form>
+        </p:dialog>
+
+        <!-- Dialog para Visualizar Detalhes -->
+        <p:dialog header="Detalhes da Consulta Médica" widgetVar="dlgView" height="600" 
+                  width="700" showEffect="fade" modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2" rendered="#{consultaController.selected != null}">    
+                    
+                    <p:outputLabel value="ID:" />
+                    <p:outputLabel value="#{consultaController.selected.id}" />
+
+                    <p:outputLabel value="Paciente:" />
+                    <p:outputLabel value="#{consultaController.selected.paciente.nome}" />
+
+                    <p:outputLabel value="CPF do Paciente:" />
+                    <p:outputLabel value="#{consultaController.selected.paciente.cpf}" />
+
+                    <p:outputLabel value="Telefone do Paciente:" />
+                    <p:outputLabel value="#{consultaController.selected.paciente.celular}" />
+
+                    <p:outputLabel value="Médico:" />
+                    <p:outputLabel value="#{consultaController.selected.medico.nome}" />
+
+                    <p:outputLabel value="Especialidade:" />
+                    <p:outputLabel value="#{consultaController.selected.medico.idEspecialidade.descricao}" />
+
+                    <p:outputLabel value="CRM:" />
+                    <p:outputLabel value="#{consultaController.selected.medico.crm}" />
+
+                    <p:outputLabel value="Data/Hora da Consulta:" />
+                    <p:outputLabel value="#{consultaController.selected.dataHora}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Status:" />
+                    <p:outputLabel value="#{consultaController.selected.status}" 
+                                   styleClass="#{consultaController.selected.status == 'Agendada' ? 'status-agendada' : 
+                                                consultaController.selected.status == 'Confirmada' ? 'status-confirmada' : 
+                                                consultaController.selected.status == 'Realizada' ? 'status-realizada' : 
+                                                'status-cancelada'}" />
+
+                    <p:outputLabel value="Observações:"/>
+                    <p:outputLabel value="#{consultaController.selected.observacoes}"/>
+
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <style>
+            .status-agendada {
+                color: #f39c12 !important;
+                font-weight: bold;
+            }
+            .status-confirmada {
+                color: #3498db !important;
+                font-weight: bold;
+            }
+            .status-realizada {
+                color: #27ae60 !important;
+                font-weight: bold;
+            }
+            .status-cancelada {
+                color: #e74c3c !important;
+                font-weight: bold;
+            }
+        </style>
+
+    </ui:define>
+
+</ui:composition>

@@ -150,69 +150,91 @@ public List<ConsultaEntity> getConsultaList() {
     }
 
     
-    public void editarConsulta() {
-        System.out.println("=== INICIANDO editarConsulta ===");
-        
-        try {
-            if (selected == null) {
-                addErrorMessage("Nenhuma consulta selecionada para edição!");
-                return;
-            }
-            
-            // Validar e buscar paciente
-            if (pacienteIdSelecionado == null || pacienteIdSelecionado == null) {
-                addErrorMessage("Por favor, selecione um paciente!");
-                return;
-            }
-            
-            Long pacienteId = Long.valueOf(pacienteIdSelecionado);
-            PacienteEntity paciente = pacienteFacade.find(pacienteId);
-            if (paciente == null) {
-                addErrorMessage("Paciente não encontrado!");
-                return;
-            }
-            selected.setPaciente(paciente);
-            
-            // Validar e buscar médico
-            if (medicoIdSelecionado == null || medicoIdSelecionado == null) {
-                addErrorMessage("Por favor, selecione um médico!");
-                return;
-            }
-            
-            Long medicoId = Long.valueOf(medicoIdSelecionado);
-            UsuarioEntity medico = usuarioFacade.find(medicoId);
-            if (medico == null) {
-                addErrorMessage("Médico não encontrado!");
-                return;
-            }
-            selected.setMedico(medico);
-            
-            // Validar data
-            if (selected.getDataHoraAsDate() == null) {
-                addErrorMessage("Por favor, informe a data e hora da consulta!");
-                return;
-            }
-            
-            // Persistir alterações
-            ejbFacade.edit(selected);
-            
-            // Limpar seleção e forçar reload
-            selected = null;
-            pacienteIdSelecionado = null;
-            medicoIdSelecionado = null;
-            consultaList = null;
-            
-            addSuccessMessage("Consulta editada com sucesso!");
-            
-        } catch (NumberFormatException e) {
-            System.err.println("Erro de formato numérico: " + e.getMessage());
-            addErrorMessage("ID inválido selecionado!");
-        } catch (Exception e) {
-            System.err.println("Erro ao editar consulta: " + e.getMessage());
-            e.printStackTrace();
-            addErrorMessage("Erro ao editar consulta: " + e.getMessage());
+   public void editarConsulta() {
+    FacesContext context = FacesContext.getCurrentInstance();
+    
+    try {
+        // 1. Verificar consulta selecionada
+        if (selected == null) {
+            addErrorMessage("Nenhuma consulta selecionada para edição!");
+            return;
         }
+        
+        // Log dos dados atuais
+        System.out.println("=== DADOS DA CONSULTA ===");
+        System.out.println("ID: " + selected.getId());
+        System.out.println("DataHora: " + selected.getDataHora());
+        System.out.println("Paciente ID: " + (selected.getPaciente() != null ? selected.getPaciente().getId() : "null"));
+        System.out.println("Médico ID: " + (selected.getMedico() != null ? selected.getMedico().getCod() : "null"));
+        
+        // 2. Validar paciente (Integer)
+        if (pacienteIdSelecionado == null) {
+            addErrorMessage("Selecione um paciente válido!");
+            return;
+        }
+        
+        PacienteEntity paciente = pacienteFacade.find(pacienteIdSelecionado);
+        if (paciente == null) {
+            addErrorMessage("Paciente não encontrado com ID: " + pacienteIdSelecionado);
+            return;
+        }
+        selected.setPaciente(paciente);
+        
+        // 3. Validar médico (Integer)
+        if (medicoIdSelecionado == null) {
+            addErrorMessage("Selecione um médico válido!");
+            return;
+        }
+        
+        UsuarioEntity medico = usuarioFacade.find(medicoIdSelecionado);
+        if (medico == null) {
+            addErrorMessage("Médico não encontrado com ID: " + medicoIdSelecionado);
+            return;
+        }
+        selected.setMedico(medico);
+        
+        // 4. Validar data/hora
+        if (selected.getDataHoraAsDate() == null) {
+            addErrorMessage("Data/hora da consulta é obrigatória!");
+            return;
+        }
+        
+        // 5. Atualizar timestamp
+        selected.setDataHora(new Timestamp(selected.getDataHoraAsDate().getTime()));
+        
+        // 6. Validar status
+        if (selected.getStatus() == null || selected.getStatus().isEmpty()) {
+            selected.setStatus("Agendada");
+        }
+        
+        // 7. Persistir (ID da consulta é Long)
+        System.out.println("Persistindo consulta com ID: " + selected.getId() + " (Long)");
+        System.out.println("Paciente ID: " + selected.getPaciente().getId() + " (Integer)");
+        System.out.println("Médico ID: " + selected.getMedico().getCod() + " (Integer)");
+        
+        ejbFacade.edit(selected);
+        
+        // 8. Limpar estado
+        selected = null;
+        pacienteIdSelecionado = null;
+        medicoIdSelecionado = null;
+        consultaList = null;
+        
+        // 9. Atualizar interface
+        context.getPartialViewContext().getRenderIds().add("form:consultaTable");
+        addSuccessMessage("Consulta atualizada com sucesso!");
+        
+    } catch (EJBException ejbEx) {
+        String msg = ejbEx.getCause() != null ? ejbEx.getCause().getMessage() : ejbEx.getMessage();
+        System.err.println("Erro EJB ao editar consulta: " + msg);
+        addErrorMessage("Erro ao editar consulta: " + msg);
+        
+    } catch (Exception ex) {
+        System.err.println("Erro detalhado ao editar consulta:");
+        ex.printStackTrace();
+        addErrorMessage("Erro ao editar: " + ex.getMessage());
     }
+}
 
     public void confirmarConsulta() {
         if (selected != null && "Agendada".equals(selected.getStatus())) {

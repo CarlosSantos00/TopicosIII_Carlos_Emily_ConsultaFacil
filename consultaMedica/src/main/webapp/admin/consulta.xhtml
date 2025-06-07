@@ -200,7 +200,7 @@
         <p:dialog header="Editar Consulta Médica" widgetVar="dlgEdit" height="600" width="650" showEffect="fade" modal="true">
             <h:form id="formEdit">
                 <p:growl id="growl" showDetail="true" />
-                <h:panelGrid id="pngEdicao" columns="2" columnClasses="label,value" rendered="#{consultaController.selected != null}">   
+                <h:panelGrid id="pngEdicao" columnClasses="label,value" rendered="#{consultaController.selected != null}">   
                     
                     <p:outputLabel value="ID:" for="iptId"/>
                     <p:inputText id="iptId" size="10" label="ID" disabled="true"
@@ -239,13 +239,13 @@
                     <!-- Data e Hora -->
                     <p:outputLabel value="Data/Hora:" for="dtConsultaEdit"/>
                     <h:panelGroup>
-                        <p:calendar id="dtConsultaEdit" value="#{consultaController.selected.dataHora}" 
-                                    showOn="button" pattern="dd/MM/yyyy HH:mm" 
-                                    mask="99/99/9999 99:99" timeOnly="false"
-                                    required="true" requiredMessage="A data/hora é obrigatória"
-                                    stepMinute="15" style="width:150%"/>
-                        <p:message for="dtConsultaEdit" display="text"/>
-                    </h:panelGroup>
+    <p:calendar id="dtConsultaEdit" value="#{consultaController.selected.dataHoraAsDate}" 
+                showOn="button" pattern="dd/MM/yyyy HH:mm" 
+                mask="99/99/9999 99:99" timeOnly="false"
+                required="true" requiredMessage="A data/hora é obrigatória"
+                stepMinute="15" style="width:150%"/>
+    <p:message for="dtConsultaEdit" display="text"/>
+</h:panelGroup>
 
                     <!-- Status -->
                     <p:outputLabel value="Status:" for="selStatusEdit"/>
@@ -270,8 +270,8 @@
         </p:dialog>
 
         <!-- Dialog para Visualizar Detalhes -->
-        <p:dialog header="Detalhes da Consulta Médica" widgetVar="dlgView" height="600" 
-                  width="700" showEffect="fade" modal="true">
+        <p:dialog header="Detalhes da Consulta Médica" widgetVar="dlgView" height="400" 
+                  width="500" showEffect="fade" modal="true">
             <h:form id="formView">
                 <h:panelGrid id="pngView" columns="2" rendered="#{consultaController.selected != null}">    
                     

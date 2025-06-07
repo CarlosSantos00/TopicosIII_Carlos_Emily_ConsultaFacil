@@ -109,6 +109,17 @@ public class ConsultaEntity implements Serializable {
         this.observacoes = observacoes;
     }
     
+    public String toStringDetalhado() {
+    return "ConsultaEntity{" +
+            "id=" + id +
+            ", pacienteId=" + (paciente != null ? paciente.getId() : "null") +
+            ", medicoId=" + (medico != null ? medico.getCod() : "null") +
+            ", dataHora=" + dataHora +
+            ", status='" + status + '\'' +
+            ", observacoes='" + (observacoes != null ? observacoes.substring(0, Math.min(observacoes.length(), 30)) + "..." : "null") +
+            '}';
+}
+    
     // equals e hashCode
     @Override
     public boolean equals(Object o) {

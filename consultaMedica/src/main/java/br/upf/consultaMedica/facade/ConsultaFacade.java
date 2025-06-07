@@ -27,6 +27,10 @@ public class ConsultaFacade extends AbstractFacade<ConsultaEntity> {
         super(ConsultaEntity.class);
     }
     
+     public ConsultaEntity find(Long id) {
+        return getEntityManager().find(ConsultaEntity.class, id);
+    }
+    
     public List<ConsultaEntity> buscarTodos() {
     try {
         return em.createQuery(

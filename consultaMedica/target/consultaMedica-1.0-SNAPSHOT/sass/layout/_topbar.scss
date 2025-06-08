@@ -3,14 +3,23 @@
         @include transition(margin-left $transitionDuration);
 
         .layout-topbar {
-            width: 100%;
+            width: 100%; // Alterado de 150% para 100%
             height: 64px;
             background-color: $topbarBgColor;
             padding: 16px 24px;
             position: fixed;
+            top: 0; // Garantir que fique no topo
+            left: 0; // Garantir que comece na lateral esquerda
             z-index: 999;
             @include transition(width $transitionDuration);
             @include shadow(0 1px 10px 0 rgba(182, 183, 195, 0.5));
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 1rem; 
+            height: 60px; 
+            background: #ffffff; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 
             .menu-btn {
                 vertical-align: top;
@@ -18,6 +27,8 @@
                 font-size: 24px;
                 color: $topbarIconColor;
                 @include transition(all $transitionDuration);
+                display: block; // Sempre visível
+                cursor: pointer; // Indicar que é clicável
 
                 &:hover {
                     color: $topbarIconHoverColor;
@@ -82,7 +93,7 @@
                         position: relative;
 
                         > a {
-                            color:$textColor;
+                            color: $textColor;
                             position: relative;
 
                             .topbar-item-name {
@@ -193,7 +204,7 @@
                 }
 
                 .topbar-menu-btn {
-                    display: none;
+                    // Removido display: none para que sempre apareça se necessário
                     position: relative;
                     top: -4px;
 
@@ -205,5 +216,43 @@
                 }
             }
         }
+    }
+}
+
+// Adicionando regras específicas para garantir responsividade
+.layout-topbar {
+    // Garantir que ocupe toda a largura em qualquer resolução
+    min-width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    
+    // Remover qualquer limitação de largura em telas grandes
+    @media (min-width: 1200px) {
+        width: 100% !important;
+    }
+    
+    @media (min-width: 1400px) {
+        width: 100% !important;
+    }
+    
+    @media (min-width: 1600px) {
+        width: 100% !important;
+    }
+}
+
+// Garantir que o menu button sempre apareça
+#layout-menu-btn {
+    display: block !important;
+    
+    @media (min-width: 768px) {
+        display: block !important;
+    }
+    
+    @media (min-width: 1024px) {
+        display: block !important;
+    }
+    
+    @media (min-width: 1200px) {
+        display: block !important;
     }
 }

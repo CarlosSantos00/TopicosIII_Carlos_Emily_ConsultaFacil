@@ -843,7 +843,10 @@ a {
   min-height: 100vh;
 }
 .layout-wrapper .layout-main .layout-content {
-  padding: 40px 10px 10px 10px;
+  padding: 40px 45px 10px 0px;
+
+
+
 
 
   flex: 1 1 0;

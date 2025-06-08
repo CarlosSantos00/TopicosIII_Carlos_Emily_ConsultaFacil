@@ -1,7 +1,5 @@
 package br.upf.consultaMedica.controller;
 
-import static br.upf.consultaMedica.controller.PacienteController.addErrorMessage;
-import static br.upf.consultaMedica.controller.PacienteController.addSuccessMessage;
 import br.upf.consultaMedica.entity.ConsultaEntity;
 import br.upf.consultaMedica.entity.PacienteEntity;
 import br.upf.consultaMedica.entity.UsuarioEntity;
@@ -17,6 +15,13 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @Named(value = "consultaController")
 @SessionScoped
@@ -39,6 +44,11 @@ public class ConsultaController implements Serializable {
     
     private Integer pacienteIdSelecionado;
     private Integer medicoIdSelecionado;
+    
+    private List<ConsultaEntity> consultasHoje;
+private int totalConsultasHoje;
+private int totalPacientes;
+private ConsultaEntity proximaConsulta;
 
     // Getters e Setters
    public Integer getPacienteIdSelecionado() {
@@ -350,4 +360,174 @@ public List<ConsultaEntity> getConsultaList() {
         }
     }
     
+
+
+// Métodos para o Dashboard
+public List<ConsultaEntity> getConsultasHoje() {
+    if (consultasHoje == null) {
+        carregarConsultasHoje();
+    }
+    return consultasHoje;
+}
+
+public void carregarConsultasHoje() {
+    try {
+        // Busca todas as consultas
+        List<ConsultaEntity> todasConsultas = ejbFacade.buscarTodos();
+        
+        // Data de hoje
+        LocalDate hoje = LocalDate.now();
+        
+        // Filtra apenas as consultas de hoje
+        consultasHoje = todasConsultas.stream()
+            .filter(consulta -> {
+                if (consulta.getDataHoraAsDate() != null) {
+                    LocalDate dataConsulta = consulta.getDataHoraAsDate()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+                    return dataConsulta.equals(hoje);
+                }
+                return false;
+            })
+            .sorted((c1, c2) -> {
+                // Ordena por horário
+                if (c1.getDataHoraAsDate() != null && c2.getDataHoraAsDate() != null) {
+                    return c1.getDataHoraAsDate().compareTo(c2.getDataHoraAsDate());
+                }
+                return 0;
+            })
+            .collect(Collectors.toList());
+            
+        // Atualiza estatísticas
+        atualizarEstatisticas();
+        
+    } catch (Exception e) {
+        System.err.println("Erro ao carregar consultas de hoje: " + e.getMessage());
+        e.printStackTrace();
+        consultasHoje = new ArrayList<>();
+    }
+}
+
+private void atualizarEstatisticas() {
+    // Total de consultas hoje
+    totalConsultasHoje = consultasHoje != null ? consultasHoje.size() : 0;
+    
+    // Próxima consulta (primeira consulta não realizada do dia)
+    proximaConsulta = null;
+    if (consultasHoje != null && !consultasHoje.isEmpty()) {
+        LocalDateTime agora = LocalDateTime.now();
+        
+        for (ConsultaEntity consulta : consultasHoje) {
+            if (consulta.getDataHoraAsDate() != null) {
+                LocalDateTime dataHoraConsulta = consulta.getDataHoraAsDate()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+                
+                // Verifica se a consulta ainda não aconteceu e não foi cancelada
+                if (dataHoraConsulta.isAfter(agora) && 
+                    !"Cancelada".equals(consulta.getStatus()) &&
+                    !"Realizada".equals(consulta.getStatus())) {
+                    proximaConsulta = consulta;
+                    break;
+                }
+            }
+        }
+    }
+    
+    // Total de pacientes (você pode implementar uma busca específica se necessário)
+    try {
+        List<PacienteEntity> pacientes = pacienteFacade.buscarTodos();
+        totalPacientes = pacientes != null ? pacientes.size() : 0;
+    } catch (Exception e) {
+        System.err.println("Erro ao buscar total de pacientes: " + e.getMessage());
+        totalPacientes = 0;
+    }
+}
+
+// Getters para as estatísticas
+public int getTotalConsultasHoje() {
+    if (consultasHoje == null) {
+        carregarConsultasHoje();
+    }
+    return totalConsultasHoje;
+}
+
+public int getTotalPacientes() {
+    if (consultasHoje == null) {
+        carregarConsultasHoje();
+    }
+    return totalPacientes;
+}
+
+public ConsultaEntity getProximaConsulta() {
+    if (consultasHoje == null) {
+        carregarConsultasHoje();
+    }
+    return proximaConsulta;
+}
+
+// Métodos auxiliares para formatação na tela
+public String getProximaConsultaHorario() {
+    if (proximaConsulta != null && proximaConsulta.getDataHoraAsDate() != null) {
+        LocalDateTime dataHora = proximaConsulta.getDataHoraAsDate()
+            .toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+        
+        return String.format("%02d:%02d", dataHora.getHour(), dataHora.getMinute());
+    }
+    return "--:--";
+}
+
+public String getProximaConsultaDescricao() {
+    if (proximaConsulta != null && proximaConsulta.getPaciente() != null) {
+        String nomePaciente = proximaConsulta.getPaciente().getNome();
+        String especialidade = "Consulta";
+        
+        if (proximaConsulta.getMedico() != null && 
+            proximaConsulta.getMedico().getIdEspecialidade() != null) {
+            especialidade = proximaConsulta.getMedico().getIdEspecialidade().getDescricao();
+        }
+        
+        return nomePaciente + " - " + especialidade;
+    }
+    return "Nenhuma consulta agendada";
+}
+
+public String formatarHorarioConsulta(ConsultaEntity consulta) {
+    if (consulta != null && consulta.getDataHoraAsDate() != null) {
+        LocalDateTime dataHora = consulta.getDataHoraAsDate()
+            .toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+        
+        return String.format("%02d:%02d", dataHora.getHour(), dataHora.getMinute());
+    }
+    return "--:--";
+}
+
+public String getStatusClass(String status) {
+    if (status == null) return "status-pending";
+    
+    switch (status.toLowerCase()) {
+        case "confirmada":
+        case "confirmado":
+            return "status-confirmed";
+        case "agendada":
+        case "agendado":
+            return "status-scheduled";
+        case "pendente":
+            return "status-pending";
+        default:
+            return "status-pending";
+    }
+}
+
+// Método para forçar atualização dos dados (útil para chamadas AJAX)
+public void atualizarDashboard() {
+    consultasHoje = null;
+    carregarConsultasHoje();
+}
 }

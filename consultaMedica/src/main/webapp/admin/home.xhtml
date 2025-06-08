@@ -209,6 +209,13 @@
                     background: #fff8e1;
                     color: #ffa000;
                 }
+
+                .no-appointments {
+                    text-align: center;
+                    padding: 2rem;
+                    color: #78909c;
+                    font-style: italic;
+                }
             </style>
 
             <p:growl id="growl" showDetail="true" life="6000"/>
@@ -217,7 +224,7 @@
                 <div class="welcome-header">
                     <h1 class="welcome-title">
                         Bem-vindo, <h:outputText value="#{loginController.nomePessoa}" />
-</h1>
+                    </h1>
                     <p class="welcome-subtitle">Aqui está o que está acontecendo hoje no seu consultório</p>
                 </div>
                 
@@ -225,66 +232,66 @@
                     <div class="dashboard-card">
                         <i class="pi pi-calendar card-icon"></i>
                         <h3 class="card-title">Consultas Hoje</h3>
-                        <p class="card-value">12</p>
-                        <p class="card-description">+2 em relação a ontem</p>
+                        <p class="card-value">#{consultaController.totalConsultasHoje}</p>
+                        <p class="card-description">Consultas agendadas para hoje</p>
                     </div>
                     
                     <div class="dashboard-card">
                         <i class="pi pi-users card-icon"></i>
                         <h3 class="card-title">Pacientes</h3>
-                        <p class="card-value">348</p>
-                        <p class="card-description">+15 este mês</p>
+                        <p class="card-value">#{consultaController.totalPacientes}</p>
+                        <p class="card-description">Total de pacientes cadastrados</p>
                     </div>
                     
                     <div class="dashboard-card">
                         <i class="pi pi-clock card-icon"></i>
                         <h3 class="card-title">Próxima Consulta</h3>
-                        <p class="card-value">08:30 AM</p>
-                        <p class="card-description">João Carlos Silva - Cardiologia</p>
+                        <p class="card-value">#{consultaController.proximaConsultaHorario}</p>
+                        <p class="card-description">#{consultaController.proximaConsultaDescricao}</p>
                     </div>
-                    
                 </div>
 
-                
                 <div class="appointments-section">
-                    <h2 class="section-title"><i class="pi pi-list"></i> Consultas do dia</h2>
+                    <h2 class="section-title">
+                        <i class="pi pi-list"></i> 
+                        Consultas do dia (#{consultaController.totalConsultasHoje})
+                        <p:commandButton 
+                            icon="pi pi-refresh" 
+                            styleClass="ui-button-text"
+                            style="margin-left: auto;"
+                            actionListener="#{consultaController.atualizarDashboard}"
+                            update="frmHome"
+                            title="Atualizar consultas" />
+                    </h2>
                     
                     <div class="appointments-list">
-                        <div class="appointment-item">
-                            <div class="appointment-time">08:30</div>
-                            <div class="appointment-details">
-                                <div class="appointment-patient">João Carlos Silva</div>
-                                <div class="appointment-procedure">Consulta de rotina - Cardiologia</div>
+                        <ui:repeat value="#{consultaController.consultasHoje}" var="consulta">
+                            <div class="appointment-item">
+                                <div class="appointment-time">
+                                    #{consultaController.formatarHorarioConsulta(consulta)}
+                                </div>
+                                <div class="appointment-details">
+                                    <div class="appointment-patient">
+                                        <h:outputText value="#{consulta.paciente.nome}" />
+                                    </div>
+                                    <div class="appointment-procedure">
+                                        <h:outputText value="#{consulta.medico.idEspecialidade.descricao}" rendered="#{consulta.medico != null and consulta.medico.idEspecialidade.descricao != null}" />
+                                        <h:outputText value="Consulta Médica" rendered="#{consulta.medico == null or consulta.medico.idEspecialidade.descricao == null}" />
+                                        <h:outputText value=" - Dr. #{consulta.medico.nome}" rendered="#{consulta.medico != null and consulta.medico.nome != null}" />
+                                    </div>
+                                </div>
+                                <div class="appointment-status #{consultaController.getStatusClass(consulta.status)}">
+                                    <h:outputText value="#{consulta.status}" />
+                                </div>
                             </div>
-                            <div class="appointment-status status-confirmed">Confirmado</div>
-                        </div>
+                        </ui:repeat>
                         
-                        <div class="appointment-item">
-                            <div class="appointment-time">10:15</div>
-                            <div class="appointment-details">
-                                <div class="appointment-patient">Ana Paula Oliveira</div>
-                                <div class="appointment-procedure">Pediatria</div>
+                        <h:panelGroup rendered="#{empty consultaController.consultasHoje}">
+                            <div class="no-appointments">
+                                <i class="pi pi-calendar" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc;"></i>
+                                <p>Nenhuma consulta agendada para hoje</p>
                             </div>
-                            <div class="appointment-status status-confirmed">Confirmado</div>
-                        </div>
-                        
-                        <div class="appointment-item">
-                            <div class="appointment-time">11:30</div>
-                            <div class="appointment-details">
-                                <div class="appointment-patient">Roberto Almeida</div>
-                                <div class="appointment-procedure">Clinico geral</div>
-                            </div>
-                            <div class="appointment-status status-pending">Pendente</div>
-                        </div>
-                        
-                        <div class="appointment-item">
-                            <div class="appointment-time">14:00</div>
-                            <div class="appointment-details">
-                                <div class="appointment-patient">Mariana Costa</div>
-                                <div class="appointment-procedure">Ginecologia</div>
-                            </div>
-                            <div class="appointment-status status-pending">Pendente</div>
-                        </div>
+                        </h:panelGroup>
                     </div>
                 </div>
             </div>

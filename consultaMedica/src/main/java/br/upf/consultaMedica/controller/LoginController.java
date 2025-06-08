@@ -7,8 +7,10 @@ import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ComponentSystemEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -90,4 +92,12 @@ public class LoginController implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         return "/login.xhtml?faces-redirect=true";
     }
+    
+public void redirecionarSeNaoLogado(ComponentSystemEvent event) throws IOException {
+    ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+    if (externalContext.getSessionMap().get("usuarioLogado") == null) {
+        // Redireciona para a raiz do sistema
+        externalContext.redirect("http://localhost:8080/consultaMedica/");
+    }
+}
 }

@@ -12,6 +12,9 @@
 
     <ui:define name="content">
         <h:form id="frmHome">
+              <f:metadata>
+        <f:event type="preRenderView" listener="#{loginController.redirecionarSeNaoLogado}" />
+    </f:metadata>
             <style>
                 .dashboard-container {
                     padding: 2rem;

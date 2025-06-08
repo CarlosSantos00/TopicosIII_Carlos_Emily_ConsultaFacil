@@ -10,7 +10,10 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:form id="frmList">            
+        <h:form id="frmList">      
+            <f:metadata>
+        <f:event type="preRenderView" listener="#{loginController.redirecionarSeNaoLogado}" />
+    </f:metadata>
             <h:panelGroup id="pngList"> 
                 <p:growl id="growl" showDetail="true" />
                 <p:fieldset toggleable="true">
@@ -21,33 +24,34 @@
                         paginator="true"
                         paginatorPosition="bottom"
                         rows="5"
+                        style="width:100%"
                         rowsPerPageTemplate="5,10,50,100"
                         emptyMessage="Nenhum usuário cadastrada...">
                         <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
 
-                        <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                        <p:column sortBy="#{item.nome}" filterBy="#{item.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Nome"/>
                             </f:facet>
                             <h:outputText value="#{item.nome}"/>
                         </p:column>
 
-                        <p:column width="8%" sortBy="#{item.email}" filterBy="#{item.email}">
+                        <p:column sortBy="#{item.email}" filterBy="#{item.email}">
                             <f:facet name="header">
                                 <h:outputText value="Email"/>
                             </f:facet>
                             <h:outputText value="#{item.email}"/>
                         </p:column>
                         
-                        <p:column width="8%" sortBy="#{item.contato}" filterBy="#{item.contato}">
+                        <p:column sortBy="#{item.contato}" filterBy="#{item.contato}">
                             <f:facet name="header">
                                 <h:outputText value="Contato"/>
                             </f:facet>
                             <h:outputText value="#{item.contato}"/>
                         </p:column>
 
-                        <p:column width="12%" sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
+                        <p:column sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
                                   filterMatchMode="contains"> 
                             <f:facet name="header">
                                 <h:outputText value="Cidade"/>
@@ -55,7 +59,7 @@
                             <h:outputText value="#{item.idCidade.nome}"/>
                         </p:column>
                         
-                        <p:column width="12%" sortBy="#{item.idFuncao.descricao}"  filterBy="#{item.idFuncao.descricao}" 
+                        <p:column sortBy="#{item.idFuncao.descricao}"  filterBy="#{item.idFuncao.descricao}" 
                                   filterMatchMode="contains"> 
                             <f:facet name="header">
                                 <h:outputText value="Função"/>
@@ -63,7 +67,7 @@
                             <h:outputText value="#{item.idFuncao.descricao}"/>
                         </p:column>
                         
-                        <p:column width="12%" sortBy="#{item.idEspecialidade.descricao}"  filterBy="#{item.idEspecialidade.descricao}" 
+                        <p:column sortBy="#{item.idEspecialidade.descricao}"  filterBy="#{item.idEspecialidade.descricao}" 
                                   filterMatchMode="contains"> 
                             <f:facet name="header">
                                 <h:outputText value="Especialidade"/>
@@ -71,14 +75,14 @@
                             <h:outputText value="#{item.idEspecialidade.descricao}"/>
                         </p:column>
                         
-                        <p:column width="10%" sortBy="#{item.crm}" filterBy="#{item.crm}">
+                        <p:column  sortBy="#{item.crm}" filterBy="#{item.crm}">
                             <f:facet name="header">
                                 <h:outputText value="CRM"/>
                             </f:facet>
                             <h:outputText value="#{item.crm}"/>
                         </p:column>
 
-                        <p:column width="8%" sortBy="#{item.observacao}" filterBy="#{item.observacao}">
+                        <p:column sortBy="#{item.observacao}" filterBy="#{item.observacao}">
                             <f:facet name="header">
                                 <h:outputText value="Observacao"/>
                             </f:facet>

@@ -10,7 +10,10 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:form id="frmList">            
+        <h:form id="frmList"> 
+               <f:metadata>
+        <f:event type="preRenderView" listener="#{loginController.redirecionarSeNaoLogado}" />
+    </f:metadata>
             <h:panelGroup id="pngList"> 
                 <p:growl id="growl" showDetail="true" />
                 <p:fieldset toggleable="true">

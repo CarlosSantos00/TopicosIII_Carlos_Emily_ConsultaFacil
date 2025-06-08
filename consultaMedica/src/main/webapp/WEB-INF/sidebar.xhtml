@@ -45,7 +45,7 @@
         .sidebar-header {
             padding: 2rem 1.5rem;
             text-align: center;
-            background: linear-gradient(135deg, #00bcd4 0%, #ff4081 100%);
+            background: linear-gradient(135deg, #00bcd4 0%, #26a69a 100%);
             color: white;
             position: relative;
             overflow: hidden;
@@ -124,7 +124,7 @@
             left: 0;
             width: 0;
             height: 100%;
-            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(255, 64, 129, 0.1) 100%);
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 166, 154, 0.1) 100%);
             transition: width 0.3s ease;
             z-index: 0;
         }
@@ -140,23 +140,10 @@
         }
 
         .menu-link.active {
-            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(255, 64, 129, 0.1) 100%);
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 166, 154, 0.1) 100%);
             color: #00bcd4;
             box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
             border-left: 3px solid #00bcd4;
-        }
-
-        .menu-link.active::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid #00bcd4;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
         }
 
         .menu-icon {
@@ -193,13 +180,13 @@
 
         .submenu-toggle:hover {
             color: #00bcd4;
-            background: linear-gradient(90deg, rgba(0, 188, 212, 0.05) 0%, rgba(255, 64, 129, 0.05) 100%);
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.05) 0%, rgba(38, 166, 154, 0.05) 100%);
             transform: translateX(5px);
         }
 
         .submenu-toggle.active {
             color: #00bcd4;
-            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(255, 64, 129, 0.1) 100%);
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 166, 154, 0.1) 100%);
         }
 
         .submenu-arrow {
@@ -245,12 +232,12 @@
         }
 
         .sidebar-container::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #00bcd4, #ff4081);
+            background: linear-gradient(135deg, #00bcd4, #26a69a);
             border-radius: 3px;
         }
 
         .sidebar-container::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #00acc1, #e91e63);
+            background: linear-gradient(135deg, #00acc1, #00897b);
         }
 
         /* Ajuste para não interferir com o topbar */
@@ -265,7 +252,7 @@
     <div class="sidebar-container" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">Consulta Fácil</div>
-            <div class="sidebar-subtitle">Sistema de Gestão</div>
+            <div class="sidebar-subtitle">Clínica de todos</div>
         </div>
 
         <div class="navigation-menu">

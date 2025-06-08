@@ -12,12 +12,10 @@ C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFac
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\FuncaoFacade.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\FuncaoController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\PlanoSaudeFacade.java
-C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\converter\PacienteConverter.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\CidadeController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\entity\CidadeEntity.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\ConsultaController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\PacienteFacade.java
-C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\converter\UsuarioConverter.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\facade\AbstractFacade.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\PlanoSaudeController.java
 C:\Users\Pichau\Documents\ConsultaFacil-main\TopicosIII_Carlos_Emily_ConsultaFacil\consultaMedica\src\main\java\br\upf\consultaMedica\controller\LoginController.java

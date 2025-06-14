@@ -1,6 +1,9 @@
 .layout-wrapper {
     .layout-main {
         @include transition(margin-left $transitionDuration);
+         width: 100%;
+          display: flex;
+    flex-direction: column;
 
         .layout-topbar {
             width: 100%;
@@ -24,34 +27,6 @@
                 }
             }
 
-            .topbar-search {
-                position: relative;
-                display: inline-block;
-                vertical-align: middle;
-                height: 40px;
-
-                input {
-                    border: 0 none;
-                    width: 150px;
-                    padding: 6px 6px 6px 18px;
-                    font-size: 14px;
-                    background-color: transparent;
-                    border-bottom: 1px solid $topbarInputBorderColor;
-                    @include transition(all $transitionDuration);
-                    outline: 0 none;
-
-                    &:focus {
-                        width: 250px;
-                    }
-                }
-
-                i {
-                    position: absolute;
-                    left: 0;
-                    top: 8px;
-                    color: $topbarIconColor;
-                }
-            }
 
             .layout-topbar-menu-wrapper {
                 float: right;
@@ -198,8 +173,8 @@
                     top: -4px;
 
                     img {
-                        width: 40px;
-                        height: 40px;
+                        width: 50px;
+                        height: 50px;
                         vertical-align: middle;
                     }
                 }

@@ -38,22 +38,6 @@ O **Sistema de Agendamento de Consultas Médicas** tem como objetivo digitalizar
 ### Banco de Dados:
 - **PostgreSQL** (ou alternativa: MySQL, H2 para testes locais)
 
-### Outras Ferramentas:
-- **Git** (controle de versão)
-- **Apache Tomcat / Payara / WildFly** (servidores de aplicação compatíveis com Jakarta EE)
-- **Lombok** (para reduzir boilerplate no código Java)
-- **JUnit / Mockito** (para testes unitários e de integração)
-
----
-
-## 💡 Possíveis Tecnologias Futuras
-
-- **Spring Boot**: como alternativa para acelerar o desenvolvimento em versões futuras.
-- **RESTful APIs**: para expor funcionalidades e integrar com outros sistemas ou mobile apps.
-- **JWT / OAuth2**: para segurança e autenticação moderna.
-- **Docker**: para empacotamento e deploy em ambientes conteinerizados.
-- **Swagger/OpenAPI**: para documentação de API (caso REST seja implementado).
-- **React ou Angular**: possível front-end moderno se houver interesse em desacoplar a UI.
 
 ---
 

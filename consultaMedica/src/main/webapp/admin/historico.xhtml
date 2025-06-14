@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Histórico de Consultas"/>
+    </ui:define>
+
+    <ui:define name="content">
+        <style>
+            /* Cores da paleta da home */
+            :root {
+                --primary-gradient: linear-gradient(90deg, #00bcd4, #ff4081);
+                --primary-light: #e0f7fa;
+                --text-primary: #263238;
+                --text-secondary: #546e7a;
+                --border-color: #e0e0e0;
+                --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            }
+            
+            .container {
+                max-width: 1800px;
+                margin: 0 auto;
+                animation: fadeIn 0.8s ease-out;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            /* Header */
+            .page-header {
+                margin-bottom: 2rem;
+                position: relative;
+                padding-bottom: 1rem;
+            }
+            
+            .page-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 80px;
+                height: 4px;
+                background: var(--primary-gradient);
+                border-radius: 2px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+                font-weight: 700;
+                margin: 0;
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            
+            /* Filtros refinados */
+            .filter-panel {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 12px;
+                margin-bottom: 2rem;
+                box-shadow: var(--card-shadow);
+            }
+            
+            .filter-grid {
+                display: grid;
+                grid-template-columns: minmax(250px, 1.5fr) minmax(250px, 1.5fr) repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                align-items: end;
+            }
+
+            .filter-group {
+                margin-bottom: 0;
+            }
+
+            .filter-label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 800;
+                color: var(--text-secondary);
+                font-size: 0.9rem;
+            }
+
+            .ui-calendar .ui-inputfield.ui-state-default {
+                border: none !important;
+                background: transparent !important;
+                width: 90% !important;
+            }
+            
+            .ui-inputfield {
+                border-radius: 6px !important;
+                border: 1px solid var(--border-color) !important;
+                font-size: 0.9rem !important;
+                background: white !important;
+            }
+            
+            .filter-buttons {
+                display: flex;
+                gap: 0.75rem;
+                align-self: end;
+            }
+            
+            /* Ajustes para os selects */
+            .ui-selectonemenu {
+                width: 100% !important;
+                border: 1px solid var(--border-color) !important;
+                border-radius: 6px !important;
+            }
+
+            .ui-selectonemenu .ui-selectonemenu-label {
+                padding: 0.5rem 1rem !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .ui-selectonemenu-trigger {
+                background: #f5f5f5 !important;
+                border-left: 1px solid var(--border-color) !important;
+                width: 2rem !important;
+            }
+            
+            .ui-selectonemenu-panel {
+                border: 1px solid var(--border-color) !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            }
+            
+            /* Cards de consulta */
+            .consultas-container {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .consulta-card {
+                background: white;
+                border-radius: 12px;
+                padding: 1.5rem;
+                box-shadow: var(--card-shadow);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .consulta-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+            
+            .consulta-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, rgba(0, 188, 212, 0.05) 0%, rgba(255, 64, 129, 0.05) 100%);
+                z-index: 0;
+            }
+            
+            .consulta-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .consulta-date {
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+            
+            .consulta-paciente {
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 0.75rem;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .consulta-detail {
+                display: flex;
+                margin-bottom: 0.5rem;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .detail-label {
+                font-weight: 600;
+                color: var(--text-secondary);
+                min-width: 70px;
+                font-size: 0.9rem;
+            }
+            
+            .detail-value {
+                color: var(--text-primary);
+                font-size: 0.9rem;
+            }
+            
+            /* Status */
+            .status-badge {
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            
+            .status-agendada {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+            
+            .status-confirmada {
+                background: #e8f5e9;
+                color: #388e3c;
+            }
+            
+            .status-cancelada {
+                background: #ffebee;
+                color: #d32f2f;
+            }
+            
+            .status-realizada {
+                background: #f5f5f5;
+                color: #616161;
+            }
+            
+            /* Contador e vazio */
+            .total-consultas {
+                background: white;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                box-shadow: var(--card-shadow);
+                display: inline-block;
+            }
+            
+            .no-results {
+                text-align: center;
+                padding: 3rem;
+                background: white;
+                border-radius: 12px;
+                color: var(--text-secondary);
+                font-size: 1rem;
+                box-shadow: var(--card-shadow);
+            }
+            
+            /* Botões com gradiente - Ajustados */
+            .btn-filter {
+                border-radius: 6px !important;
+                border: none !important;
+                transition: all 0.3s !important;
+                font-size: 0.85rem !important;
+                height: auto !important;
+                line-height: 1.2 !important;
+                min-width: 80px !important;
+            }
+            
+            .btn-filter .pi {
+                font-size: 0.9rem !important;
+                margin-right: 0.3rem !important;
+            }
+            
+            .btn-filter-primary {
+                background: #59a6c5 !important;
+                color: white !important;
+            }
+            
+            .btn-filter-primary:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+            
+            .btn-filter-secondary {
+                background: white !important;
+                color: var(--text-secondary) !important;
+                border: 1px solid var(--border-color) !important;
+            }
+            
+            .btn-filter-secondary:hover {
+                background: #f5f5f5 !important;
+            }
+        </style>
+
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Histórico de Consultas</h1>
+            </div>
+            
+            <f:metadata>
+                <f:event type="preRenderView" listener="#{loginController.redirecionarSeNaoLogado}" />
+            </f:metadata>
+            
+            <h:form id="formHistorico">
+                <div class="filter-panel">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Nome do Paciente</label>
+                            <p:inputText value="#{consultaController.nomePacienteFiltro}" 
+                                         placeholder="Digite o nome"
+                                         styleClass="ui-inputfield"
+                                         style="width: 100%"/>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">CPF do Paciente</label>
+                            <p:inputMask value="#{consultaController.cpfPacienteFiltro}" 
+                                         mask="999.999.999-99"
+                                         placeholder="Digite o CPF"
+                                         styleClass="ui-inputfield"
+                                         style="width: 100%"/>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Data inicial</label>
+                            <p:calendar value="#{consultaController.dataInicio}" 
+                                        pattern="dd/MM/yyyy" navigator="true" locale="pt_BR"
+                                        placeholder="Selecione"
+                                        styleClass="ui-inputfield"
+                                        style="width: 100%"
+                                        />
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Data final</label>
+                            <p:calendar value="#{consultaController.dataFim}" 
+                                        pattern="dd/MM/yyyy" navigator="true" locale="pt_BR"
+                                        placeholder="Selecione"
+                                        styleClass="ui-inputfield"
+                                        style="width: 100%"/>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Status</label>
+                            <p:selectOneMenu value="#{consultaController.statusFiltro}"
+                                             styleClass="ui-inputfield"
+                                             style="width: 100%">
+                                
+                                <f:selectItem itemLabel="Todos" itemValue="" />
+                                <f:selectItem itemLabel="Agendada" itemValue="Agendada" />
+                                <f:selectItem itemLabel="Confirmada" itemValue="Confirmada" />
+                                <f:selectItem itemLabel="Cancelada" itemValue="Cancelada" />
+                                <f:selectItem itemLabel="Realizada" itemValue="Realizada" />
+                            </p:selectOneMenu>
+                        </div>
+                        
+                        <div class="filter-buttons">
+                            <p:commandButton value="Filtrar" action="#{consultaController.filtrarConsultas}" 
+                                             update="consultaList" icon="pi pi-filter"
+                                             styleClass="btn-filter btn-filter-primary"/>
+                            <p:commandButton value="Limpar" action="#{consultaController.limparFiltros}" 
+                                             update="formHistorico" icon="pi pi-times"
+                                             styleClass="btn-filter btn-filter-secondary"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <h:panelGroup id="consultaList">
+                    <ui:fragment rendered="#{not empty consultaController.consultasFiltradas}">
+                        <div class="total-consultas">
+                            <i class="pi pi-filter" style="margin-right: 0.5rem;"></i>
+                            Total de consultas: #{consultaController.consultasFiltradas.size()}
+                        </div>
+                        
+                        <div class="consultas-container">
+                            <ui:repeat value="#{consultaController.consultasFiltradas}" var="consulta">
+                                <div class="consulta-card">
+                                    <div class="consulta-header">
+                                        <div class="consulta-date">
+                                            <h:outputText value="#{consulta.dataHoraAsDate}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                            </h:outputText>
+                                        </div>
+                                        <span class="status-badge status-#{consulta.status.toLowerCase()}">
+                                            #{consulta.status}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="consulta-paciente">
+                                        #{consulta.paciente.nome} - #{consulta.paciente.celular}
+                                    </div>
+                                   
+                                    <div class="consulta-detail">
+                                        <span class="detail-label">CPF</span>
+                                        <span class="detail-value"> #{consulta.paciente.cpf}</span>
+                                    </div>
+                                    
+                                    <div class="consulta-detail">
+                                        <span class="detail-label">Médico:</span>
+                                        <span class="detail-value">#{consulta.medico.nome} - #{consulta.medico.idEspecialidade.descricao}</span>
+                                    </div>
+                                    
+                                    <div class="consulta-detail">
+                                        <span class="detail-label">Plano:</span>
+                                        <span class="detail-value">#{consulta.plano.nome}</span>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </ui:fragment>
+                    
+                    <ui:fragment rendered="#{empty consultaController.consultasFiltradas}">
+                        <div class="no-results">
+                            <i class="pi pi-search" style="font-size: 2rem; margin-bottom: 1rem; color: #cfd8dc;"></i>
+                            <p>Nenhuma consulta encontrada com os filtros selecionados</p>
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+            </h:form>
+        </div>
+    </ui:define>
+</ui:composition>

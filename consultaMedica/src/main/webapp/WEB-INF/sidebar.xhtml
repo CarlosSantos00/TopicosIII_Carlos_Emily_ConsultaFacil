@@ -1,31 +1,420 @@
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:pm="http://primefaces.org/manhattan">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+                xmlns:f="http://java.sun.com/jsf/core" 
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:ui="http://java.sun.com/jsf/facelets" 
+                xmlns:p="http://primefaces.org/ui" 
+                xmlns:pm="http://primefaces.org/manhattan">
 
-    <div class="layout-sidebar">
-        <div class="layout-sidebar-logo">
-            <h:graphicImage name="images/login/login.png" alt="Logo" />
+    <style>
+        .sidebar-container {
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            position: fixed;
+            left: -280px;
+            top: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar-container.open {
+            left: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #00bcd4 0%, #26a69a 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            z-index: 0;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            font-weight: 400;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .navigation-menu {
+            padding: 1.5rem 0;
+        }
+
+        .menu-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #78909c;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item {
+            margin: 0.25rem 0;
+            position: relative;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            text-decoration: none;
+            color: #546e7a;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border-radius: 0 25px 25px 0;
+            margin-right: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 166, 154, 0.1) 100%);
+            transition: width 0.3s ease;
+            z-index: 0;
+        }
+
+        .menu-link:hover::before {
+            width: 100%;
+        }
+
+        .menu-link:hover {
+            color: #00bcd4;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+        }
+
+        .menu-link.active {
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 166, 154, 0.1) 100%);
+            color: #00bcd4;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.15);
+            border-left: 3px solid #00bcd4;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 0.875rem;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .menu-link:hover .menu-icon {
+            transform: scale(1.1);
+        }
+
+        .submenu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.875rem 1.5rem;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            color: #546e7a;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0 25px 25px 0;
+            margin-right: 1rem;
+        }
+
+        .submenu-toggle:hover {
+            color: #00bcd4;
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.05) 0%, rgba(38, 166, 154, 0.05) 100%);
+            transform: translateX(5px);
+        }
+
+        .submenu-toggle.active {
+            color: #00bcd4;
+            background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, rgba(38, 166, 154, 0.1) 100%);
+        }
+
+        .submenu-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .submenu-toggle.active .submenu-arrow {
+            transform: rotate(90deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.02);
+            margin-left: 1rem;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .submenu.open {
+            max-height: 200px;
+        }
+
+        .submenu .menu-link {
+            padding-left: 2.5rem;
+            font-size: 0.9rem;
+            margin-right: 1.5rem;
+        }
+
+        .submenu .menu-icon {
+            font-size: 1rem;
+            margin-right: 0.75rem;
+        }
+
+        /* Scrollbar personalizada */
+        .sidebar-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .sidebar-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00bcd4, #26a69a);
+            border-radius: 3px;
+        }
+
+        .sidebar-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00acc1, #00897b);
+        }
+
+        /* Ajuste para não interferir com o topbar */
+        body {
+            padding-top: 60px; /* Altura do topbar */
+        }
+    </style>
+
+    <!-- Overlay para fechar sidebar clicando fora -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="sidebar-container" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">Consulta Fácil</div>
+            <div class="sidebar-subtitle">Clínica de todos</div>
         </div>
 
-        <div class="layout-menu-container">
+        <div class="navigation-menu">
             <h:form id="menuform">
-                <pm:menu widgetVar="ManhattanMenuWidget">
-                    <p:submenu label="Gerenciamento" icon="pi pi-cog">
-                        <p:menuitem id="mnuPacientes" value="Gerenciamento de Pacientes" icon="pi pi-users"/>
-                        <p:menuitem id="mnuUsuarios" value="Gerenciamento de Usuários" icon="pi pi-user" outcome="/admin/usuarios.xhtml" />
-                        
-                    </p:submenu>
-                    <p:submenu label="Consultas" icon="pi pi-cog">                    
-                        <p:menuitem id="mnuAgendamento" value="Agendamento de Consultas" icon="pi pi-calendar" />
-                        <p:menuitem id="mnuConsultas" value="Histórico de consultas" icon="pi pi-calendar" />
-                    </p:submenu> 
-                </pm:menu>
+                <!-- Home -->
+                <div class="menu-section">
+                    <div class="menu-item">
+                        <h:link outcome="/admin/home.xhtml" styleClass="menu-link">
+                            <i class="pi pi-home menu-icon"></i>
+                            <span>Home</span>
+                        </h:link>
+                    </div>
+                </div>
+
+                <!-- Gerenciamento -->
+                <div class="menu-section">
+                    <div class="section-title">Gerenciamento</div>
+                    
+                    <div class="menu-item">
+                        <h:link outcome="/admin/paciente.xhtml" styleClass="menu-link">
+                            <i class="pi pi-users menu-icon"></i>
+                            <span>Pacientes</span>
+                        </h:link>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <h:link outcome="/admin/usuarios.xhtml" styleClass="menu-link">
+                            <i class="pi pi-user menu-icon"></i>
+                            <span>Usuários</span>
+                        </h:link>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <h:link outcome="/admin/planoSaude.xhtml" styleClass="menu-link">
+                            <i class="pi pi-shield menu-icon"></i>
+                            <span>Planos de Saúde</span>
+                        </h:link>
+                    </div>
+                </div>
+
+                <!-- Consultas -->
+                <div class="menu-section">
+                    <div class="section-title">Consultas</div>
+                    
+                    <div class="menu-item">
+                        <h:link outcome="/admin/consulta.xhtml" styleClass="menu-link">
+                            <i class="pi pi-calendar menu-icon"></i>
+                            <span>Agendamento</span>
+                        </h:link>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <h:link outcome="/admin/historico.xhtml" styleClass="menu-link">
+                            <i class="pi pi-history menu-icon"></i>
+                            <span>Histórico</span>
+                        </h:link>
+                    </div>
+                    
+                 
+                </div>
             </h:form>
         </div>
     </div>
+
+    <!-- JavaScript para controlar a sidebar -->
+    <script type="text/javascript">
+    //<![CDATA[
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.getElementById('layout-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            // Função para abrir a sidebar
+            function openSidebar() {
+                sidebar.classList.add('open');
+                sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Função para fechar a sidebar
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Event listener para o botão do menu hambúrguer
+            if (menuBtn) {
+                menuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (sidebar.classList.contains('open')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                });
+            }
+            
+            // Event listener para fechar sidebar clicando no overlay
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    closeSidebar();
+                });
+            }
+            
+            // Fechar sidebar com a tecla ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                }
+            });
+            
+            // Funcionalidade para submenus
+            const submenuToggles = document.querySelectorAll('.submenu-toggle');
+            submenuToggles.forEach(function(toggle) {
+                toggle.addEventListener('click', function() {
+                    const submenu = this.nextElementSibling;
+                    
+                    this.classList.toggle('active');
+                    submenu.classList.toggle('open');
+                });
+            });
+            
+            // Destacar item ativo baseado na URL atual
+            function setActiveMenuItem() {
+                const currentPath = window.location.pathname;
+                const menuLinks = document.querySelectorAll('.menu-link');
+                
+                menuLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                    
+                    const href = link.getAttribute('href');
+                    if (href && currentPath.includes(href.split('/').pop())) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            // Aplicar item ativo ao carregar a página
+            setActiveMenuItem();
+            
+            // Fechar sidebar automaticamente em telas pequenas ao clicar em um link
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        setTimeout(function() {
+                            closeSidebar();
+                        }, 150);
+                    }
+                });
+            });
+            
+            // Responsividade: fechar sidebar ao redimensionar para desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768 && sidebar.classList.contains('open')) {
+                    closeSidebar();
+                }
+            });
+        });
+    //]]>
+    </script>
 
 </ui:composition>

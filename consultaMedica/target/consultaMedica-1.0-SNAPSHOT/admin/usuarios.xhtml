@@ -94,15 +94,18 @@
                             <p:commandButton id="btnCreate" value="Incluir usuário"  icon="pi pi-file" 
                                              actionListener="#{usuarioController.prepareAdicionar()}"
                                              update=":CreateForm"
-                                             onclick="PF('dlgCreate').show()"/>  
+                                             onclick="PF('dlgCreate').show()"
+                                             style="margin-right: 10px;"/>  
 
                             <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar usuário" 
                                              update="formEdit" oncomplete="PF('dlgEdit').show()" 
-                                             disabled="#{empty usuarioController.selected}"/>
+                                             disabled="#{empty usuarioController.selected}"
+                                             style="margin-right: 10px;"/>
 
                             <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Usuário" 
                                              actionListener="#{usuarioController.deletarUsuario()}" update="frmList" 
-                                             disabled="#{empty usuarioController.selected}">
+                                             disabled="#{empty usuarioController.selected}"
+                                             style="margin-right: 10px;">
                                 <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
                                            icon="ui-icon-alert"  />
                             </p:commandButton>

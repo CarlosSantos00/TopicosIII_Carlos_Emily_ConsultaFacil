@@ -84,31 +84,34 @@
                         </p:column>
 
                         <f:facet name="footer">
-                           <p:commandButton id="btnCreate" value="Novo Paciente" icon="pi pi-plus" 
-                                            action="#{pacienteController.prepareAdicionar()}"
-                                            update=":CreateForm"
-                                            oncomplete="PF('dlgCreate').show()"
-                                            immediate="true"/>
+    <p:commandButton id="btnCreate" value="Novo Paciente" icon="pi pi-plus" 
+                    action="#{pacienteController.prepareAdicionar()}"
+                    update=":CreateForm"
+                    oncomplete="PF('dlgCreate').show()"
+                    immediate="true"
+                    style="margin-right: 10px;"/>
 
-                            <p:commandButton id="btnEdit" icon="pi pi-pencil" value="Editar" 
-                                             actionListener="#{pacienteController.prepareEditar()}"
-                                             update=":formEdit" 
-                                             oncomplete="PF('dlgEdit').show()" 
-                                             disabled="#{empty pacienteController.selected}"/>
+    <p:commandButton id="btnEdit" icon="pi pi-pencil" value="Editar" 
+                    actionListener="#{pacienteController.prepareEditar()}"
+                    update=":formEdit" 
+                    oncomplete="PF('dlgEdit').show()" 
+                    disabled="#{empty pacienteController.selected}"
+                    style="margin-right: 10px;"/>
 
-                            <p:commandButton id="btnDelete" icon="pi pi-trash" value="Excluir" 
-                                             actionListener="#{pacienteController.deletarPaciente()}" 
-                                             update="frmList" 
-                                             disabled="#{empty pacienteController.selected}">
-                                <p:confirm header="Confirmação" message="Deseja realmente excluir este paciente?" 
-                                           icon="pi pi-exclamation-triangle" />
-                            </p:commandButton>
+    <p:commandButton id="btnDelete" icon="pi pi-trash" value="Excluir" 
+                    actionListener="#{pacienteController.deletarPaciente()}" 
+                    update="frmList" 
+                    disabled="#{empty pacienteController.selected}"
+                    style="margin-right: 10px;">
+        <p:confirm header="Confirmação" message="Deseja realmente excluir este paciente?" 
+                  icon="pi pi-exclamation-triangle" />
+    </p:commandButton>
 
-                            <p:commandButton id="btnView" icon="pi pi-eye" value="Detalhes" 
-                                             update=":formView" 
-                                             oncomplete="PF('dlgView').show()" 
-                                             disabled="#{empty pacienteController.selected}"/>
-                        </f:facet>
+    <p:commandButton id="btnView" icon="pi pi-eye" value="Detalhes" 
+                    update=":formView" 
+                    oncomplete="PF('dlgView').show()" 
+                    disabled="#{empty pacienteController.selected}"/>
+</f:facet>
                     </p:dataTable>
                 </p:fieldset>
                 

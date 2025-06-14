@@ -1,0 +1,200 @@
+--- Cidade 
+
+CREATE TABLE cidade (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(500) NOT NULL,
+    ufenum CHAR(2) NOT NULL
+);
+
+
+INSERT INTO cidade (nome, ufenum) VALUES
+('Porto Alegre', 'RS'),
+('Florianópolis', 'SC'),
+('Curitiba', 'PR'),
+('São Paulo', 'SP'),
+('Rio de Janeiro', 'RJ'),
+('Belo Horizonte', 'MG'),
+('Salvador', 'BA'),
+('Fortaleza', 'CE'),
+('Manaus', 'AM'),
+('Brasília', 'DF'),
+('Passo Fundo', 'RS');
+
+
+
+====================================================================
+
+--- Funcao
+
+CREATE TABLE funcao (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(100) NOT NULL
+);
+
+INSERT INTO funcao (descricao) VALUES
+('Administrador'),
+('Atendente'),
+('Médico');
+
+====================================================================
+
+--- Especialidade
+
+CREATE TABLE especialidade (
+    id SERIAL PRIMARY KEY,
+    descricao VARCHAR(100) NOT NULL
+);
+
+INSERT INTO especialidade (descricao) VALUES
+('Cardiologia'),
+('Dermatologia'),
+('Ortopedia'),
+('Pediatria'),
+('Ginecologia'),
+('Neurologia'),
+('Psiquiatria'),
+('Oftalmologia'),
+('Endocrinologia'),
+('Clinico Geral'),
+('Urologia');
+
+====================================================================
+
+--- Planos
+
+CREATE TABLE planos_medicos (
+    id SERIAL PRIMARY KEY,
+    
+    nome VARCHAR(100) NOT NULL,
+    codigo_ans VARCHAR(20) UNIQUE NOT NULL,
+    tipo_plano VARCHAR(50) NOT NULL,
+    valor_mensal NUMERIC(10, 2) NOT NULL,
+    coparticipacao NUMERIC(5, 2) DEFAULT 0,
+    cobre_internacao VARCHAR(20),
+    cobre_emergencia VARCHAR(20),
+    cobre_odontologico VARCHAR(20),
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    observacoes TEXT
+);
+
+-- Gatilho para atualizar data_atualizacao automaticamente
+CREATE OR REPLACE FUNCTION atualizar_data_modificacao()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.data_atualizacao = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_atualizar_data_modificacao
+BEFORE UPDATE ON planos_medicos
+FOR EACH ROW
+EXECUTE FUNCTION atualizar_data_modificacao();
+
+
+INSERT INTO planos_medicos VALUES 
+(1, 'teste de plano de saude', '2555', 'Individual', 50.00, 100.00, 'Não', 'Não', 'Não', '2025-06-07 14:32:36.322', '2025-06-14 16:02:36.160631', 'testeeeeeee');
+
+
+
+====================================================================
+
+--- usuarios
+CREATE TABLE usuarios (
+    cod SERIAL PRIMARY KEY,
+    nome VARCHAR(500) NOT NULL,
+    dta_nascimento DATE NOT NULL,
+    email VARCHAR(250) NOT NULL,
+    observacao TEXT,
+    senha TEXT NOT NULL,
+    dta_registro TIMESTAMP DEFAULT NOW(),
+    id_cidade INTEGER NOT NULL,
+    id_funcao INTEGER NOT NULL,
+    id_especialidade INTEGER,
+	crm text
+	contato text
+    CONSTRAINT fk_pessoa_cidade FOREIGN KEY (id_cidade) REFERENCES cidade(id),
+    CONSTRAINT fk_pessoa_funcao FOREIGN KEY (id_funcao) REFERENCES funcao(id),
+    CONSTRAINT fk_pessoa_especialidade FOREIGN KEY (id_especialidade) REFERENCES especialidade(id)
+);
+
+INSERT INTO usuarios (
+    nome,
+    dta_nascimento,
+    email,
+    observacao,
+    senha,
+    id_cidade,
+    id_funcao,
+    id_especialidade
+) VALUES (
+    'Emily Marinho',
+    TO_DATE('21/06/2002', 'DD/MM/YYYY'),
+    '195332@upf.br',
+    'Usuário teste',
+    '21062002',
+    11,
+    1,
+    NULL
+);
+
+====================================================================
+
+--- Pacientes
+
+CREATE TABLE pacientes (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(20) UNIQUE NOT NULL,
+    rg VARCHAR(20),
+    data_nascimento DATE NOT NULL,
+    sexo CHAR(1) CHECK (sexo IN ('M', 'F', 'O')),
+    estado_civil VARCHAR(20),
+    profissao VARCHAR(50),
+    
+    -- Dados de contato
+    celular VARCHAR(25),
+    email VARCHAR(100),
+    
+    -- Endereço
+    endereco VARCHAR(150),
+    numero VARCHAR(10),
+    bairro VARCHAR(50),
+    cidade VARCHAR(50),
+    uf CHAR(2),
+    cep VARCHAR(20),
+    
+    -- Dados médicos básicos
+    tipo_sanguineo VARCHAR(3),
+    alergias TEXT,
+    medicamentos_uso TEXT,
+    observacoes TEXT,
+    
+    -- Contato de emergência
+    contato_emergencia_nome VARCHAR(100),
+    contato_emergencia_parentesco VARCHAR(30),
+    contato_emergencia_telefone VARCHAR(15),
+    
+    -- Dados do sistema
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+====================================================================
+
+--- Consulta
+
+CREATE TABLE consulta (
+    id SERIAL PRIMARY KEY,
+    paciente_id INT NOT NULL REFERENCES pacientes(id),
+    medico_id INT NOT NULL REFERENCES usuarios(cod),
+    data_hora TIMESTAMP NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Agendada'
+        CHECK (status IN ('Agendada','Confirmada', 'Realizada', 'Cancelada')),
+    observacoes TEXT
+plano_id INT
+);
+
+-----------------------------------------------------------------
+

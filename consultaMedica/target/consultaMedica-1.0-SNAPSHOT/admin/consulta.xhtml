@@ -30,28 +30,35 @@
                         <p:ajax event="rowSelect" update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
                         <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView btnConfirmar btnCancelar"/>
 
-                        <p:column width="10%" sortBy="#{item.id}">
+                        <p:column width="8%" sortBy="#{item.id}">
                             <f:facet name="header">
                                 <h:outputText value="ID"/>
                             </f:facet>
                             <h:outputText value="#{item.id}"/>
                         </p:column>
 
-                        <p:column width="20%" sortBy="#{item.paciente.nome}" filterBy="#{item.paciente.nome}">
+                        <p:column width="18%" sortBy="#{item.paciente.nome}" filterBy="#{item.paciente.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Paciente"/>
                             </f:facet>
                             <h:outputText value="#{item.paciente.nome}"/>
                         </p:column>
 
-                        <p:column width="20%" sortBy="#{item.medico.nome}" filterBy="#{item.medico.nome}">
+                        <p:column width="18%" sortBy="#{item.medico.nome}" filterBy="#{item.medico.nome}">
                             <f:facet name="header">
                                 <h:outputText value="Médico"/>
                             </f:facet>
                             <h:outputText value="#{item.medico.nome}"/>
                         </p:column>
 
-                        <p:column width="15%" sortBy="#{item.dataHora}">
+                        <p:column width="15%" sortBy="#{item.plano.nome}" filterBy="#{item.plano.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Plano de Saúde"/>
+                            </f:facet>
+                            <h:outputText value="#{item.plano.nome}"/>
+                        </p:column>
+
+                        <p:column width="13%" sortBy="#{item.dataHora}">
                             <f:facet name="header">
                                 <h:outputText value="Data/Hora"/>
                             </f:facet>
@@ -60,7 +67,7 @@
                             </h:outputText>
                         </p:column>
 
-                        <p:column width="12%" sortBy="#{item.status}" filterBy="#{item.status}">
+                        <p:column width="10%" sortBy="#{item.status}" filterBy="#{item.status}">
                             <f:facet name="header">
                                 <h:outputText value="Status"/>
                             </f:facet>
@@ -71,7 +78,7 @@
                                                        'status-cancelada'}"/>
                         </p:column>
 
-                        <p:column width="23%" sortBy="#{item.observacoes}">
+                        <p:column width="18%" sortBy="#{item.observacoes}">
                             <f:facet name="header">
                                 <h:outputText value="Observações"/>
                             </f:facet>
@@ -130,7 +137,7 @@
         </h:form>
 
         <!-- Dialog para Nova Consulta -->
-        <p:dialog header="Nova Consulta Médica" widgetVar="dlgCreate" height="500" width="600" 
+        <p:dialog header="Nova Consulta Médica" widgetVar="dlgCreate" height="550" width="650" 
                  showEffect="fade" modal="true" closeOnEscape="true">
             <h:form id="CreateForm">
                 <p:growl id="growlCreate" showDetail="true" />
@@ -164,6 +171,21 @@
                                            itemValue="#{medico.cod}"/>
                         </p:selectOneMenu>
                         <p:message for="selMedico" display="text"/>
+                    </h:panelGroup>
+
+                    <!-- Plano de Saúde -->
+                    <p:outputLabel value="Plano de Saúde:" for="selPlano"/>
+                    <h:panelGroup>
+                        <p:selectOneMenu id="selPlano" value="#{consultaController.planoIdSelecionado}" 
+                                         required="true" requiredMessage="O plano de saúde é obrigatório"
+                                         style="width:150%" filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione o plano..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{planoSaudeController.planoSaudeList}" 
+                                           var="plano" 
+                                           itemLabel="#{plano.nome}" 
+                                           itemValue="#{plano.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="selPlano" display="text"/>
                     </h:panelGroup>
 
                     <!-- Data e Hora -->
@@ -200,7 +222,7 @@
         </p:dialog>
 
         <!-- Dialog para Editar Consulta -->
-        <p:dialog header="Editar Consulta Médica" widgetVar="dlgEdit" height="600" width="650" 
+        <p:dialog header="Editar Consulta Médica" widgetVar="dlgEdit" height="650" width="700" 
                  showEffect="fade" modal="true" closeOnEscape="true">
             <h:form id="formEdit">
                 <p:growl id="growlEdit" showDetail="true" />
@@ -240,6 +262,21 @@
                         <p:message for="selMedicoEdit" display="text"/>
                     </h:panelGroup>
 
+                    <!-- Plano de Saúde -->
+                    <p:outputLabel value="Plano de Saúde:" for="selPlanoEdit"/>
+                    <h:panelGroup>
+                        <p:selectOneMenu id="selPlanoEdit" value="#{consultaController.planoIdSelecionado}" 
+                                         required="true" requiredMessage="O plano de saúde é obrigatório"
+                                         style="width:150%" filter="true" filterMatchMode="contains">
+                            <f:selectItem itemLabel="Selecione o plano..." itemValue="" noSelectionOption="true"/>
+                            <f:selectItems value="#{planoSaudeController.planoSaudeList}" 
+                                           var="plano" 
+                                           itemLabel="#{plano.nome}" 
+                                           itemValue="#{plano.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="selPlanoEdit" display="text"/>
+                    </h:panelGroup>
+
                     <!-- Data e Hora -->
                     <p:outputLabel value="Data/Hora:" for="dtConsultaEdit"/>
                     <h:panelGroup>
@@ -276,8 +313,8 @@
         </p:dialog>
 
         <!-- Dialog para Visualizar Detalhes -->
-        <p:dialog header="Detalhes da Consulta Médica" widgetVar="dlgView" height="400" 
-                  width="500" showEffect="fade" modal="true" closeOnEscape="true">
+        <p:dialog header="Detalhes da Consulta Médica" widgetVar="dlgView" height="500" 
+                  width="550" showEffect="fade" modal="true" closeOnEscape="true">
             <h:form id="formView">
                 <h:panelGrid id="pngView" rendered="#{consultaController.selected != null}">    
                     
@@ -301,6 +338,9 @@
 
                     <p:outputLabel value="CRM:" />
                     <p:outputLabel value="#{consultaController.selected.medico.crm}" />
+
+                    <p:outputLabel value="Plano de Saúde:" />
+                    <p:outputLabel value="#{consultaController.selected.plano.nome}" />
 
                     <p:outputLabel value="Data/Hora da Consulta:" />
                     <p:outputLabel value="#{consultaController.selected.dataHora}">

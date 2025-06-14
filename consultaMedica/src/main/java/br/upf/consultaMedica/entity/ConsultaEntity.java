@@ -28,6 +28,11 @@ public class ConsultaEntity implements Serializable {
     private UsuarioEntity medico;
     
     @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plano_id", referencedColumnName = "id", nullable = false)
+    private PlanoSaudeEntity plano;
+    
+    @NotNull
     @Column(name = "data_hora", nullable = false)
     private Timestamp dataHora;
     
@@ -71,7 +76,6 @@ public class ConsultaEntity implements Serializable {
         this.dataHora = dataHora;
     }
     
-    // Método auxiliar para conversão de Date para Timestamp
     public void setDataHora(Date dataHora) {
         if (dataHora != null) {
             this.dataHora = new Timestamp(dataHora.getTime());
@@ -80,7 +84,14 @@ public class ConsultaEntity implements Serializable {
         }
     }
     
-    // Método auxiliar para retornar Date (para compatibilidade com PrimeFaces)
+        public PlanoSaudeEntity getPlano() {
+        return plano;
+    }
+    
+    public void setPlano(PlanoSaudeEntity plano) {
+        this.plano = plano;
+    }
+    
     public Date getDataHoraAsDate() {
         return dataHora != null ? new Date(dataHora.getTime()) : null;
     }

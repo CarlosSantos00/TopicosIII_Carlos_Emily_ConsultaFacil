@@ -2,9 +2,11 @@ package br.upf.consultaMedica.controller;
 
 import br.upf.consultaMedica.entity.ConsultaEntity;
 import br.upf.consultaMedica.entity.PacienteEntity;
+import br.upf.consultaMedica.entity.PlanoSaudeEntity;
 import br.upf.consultaMedica.entity.UsuarioEntity;
 import br.upf.consultaMedica.facade.ConsultaFacade;
 import br.upf.consultaMedica.facade.PacienteFacade;
+import br.upf.consultaMedica.facade.PlanoSaudeFacade;
 import br.upf.consultaMedica.facade.UsuarioFacade;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
@@ -37,6 +39,9 @@ public class ConsultaController implements Serializable {
 
     @EJB
     private UsuarioFacade usuarioFacade;
+    
+    @EJB
+    private PlanoSaudeFacade planoSaudeFacade;
 
     private ConsultaEntity consulta = new ConsultaEntity();
     private List<ConsultaEntity> consultaList;
@@ -46,12 +51,13 @@ public class ConsultaController implements Serializable {
     private Integer medicoIdSelecionado;
     
     private List<ConsultaEntity> consultasHoje;
-private int totalConsultasHoje;
-private int totalPacientes;
-private ConsultaEntity proximaConsulta;
+    private int totalConsultasHoje;
+    private int totalPacientes;
+    private ConsultaEntity proximaConsulta;
+    private Long planoIdSelecionado;
 
     // Getters e Setters
-   public Integer getPacienteIdSelecionado() {
+    public Integer getPacienteIdSelecionado() {
         return pacienteIdSelecionado;
     }
 
@@ -66,7 +72,6 @@ private ConsultaEntity proximaConsulta;
     public void setMedicoIdSelecionado(Integer medicoIdSelecionado) {
         this.medicoIdSelecionado = medicoIdSelecionado;
     }
-    
 
     public ConsultaEntity getSelected() {
         return selected;
@@ -82,6 +87,9 @@ private ConsultaEntity proximaConsulta;
             if (selected.getMedico() != null) {
                 this.medicoIdSelecionado = selected.getMedico().getCod();
             }
+            if (selected.getPlano() != null) {
+                this.planoIdSelecionado = selected.getPlano().getId();
+            }
         }
     }
 
@@ -92,21 +100,59 @@ private ConsultaEntity proximaConsulta;
     public void setConsulta(ConsultaEntity consulta) {
         this.consulta = consulta;
     }
+    
+    public Long getPlanoIdSelecionado() {
+        return planoIdSelecionado;
+    }
 
-public List<ConsultaEntity> getConsultaList() {
-    consultaList = ejbFacade.buscarTodos();
-    return consultaList;
-}
+    public void setPlanoIdSelecionado(Long planoIdSelecionado) {
+        this.planoIdSelecionado = planoIdSelecionado;
+    }
+
+    public List<ConsultaEntity> getConsultaList() {
+        consultaList = ejbFacade.buscarTodos();
+        return consultaList;
+    }
 
     public ConsultaEntity prepareAdicionar() {
         consulta = new ConsultaEntity();
         pacienteIdSelecionado = null;
         medicoIdSelecionado = null;
+        planoIdSelecionado = null;
         return consulta;
     }
 
+    // Métodos relacionados ao Plano de Saúde
+    public List<PlanoSaudeEntity> getPlanosSaude() {
+        try {
+            return planoSaudeFacade.buscarTodos();
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar planos de saúde: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
+    public PlanoSaudeEntity getPlanoSaudeById(Long id) {
+        if (id == null) {
+            return null;
+        }
+        try {
+            return planoSaudeFacade.find(id);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar plano de saúde por ID: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+    public String getDescricaoPlano(Long planoId) {
+        PlanoSaudeEntity plano = getPlanoSaudeById(planoId);
+        return plano != null ? plano.getNome(): "Plano não encontrado";
+    }
+
     // Métodos de ação
-     public String adicionarConsulta() {
+    public String adicionarConsulta() {
         try {
             // Validações
             if (pacienteIdSelecionado == null) {
@@ -116,6 +162,11 @@ public List<ConsultaEntity> getConsultaList() {
 
             if (medicoIdSelecionado == null) {
                 addErrorMessage("Selecione um médico!");
+                return null;
+            }
+
+            if (planoIdSelecionado == null) {
+                addErrorMessage("Selecione um plano de saúde!");
                 return null;
             }
 
@@ -131,10 +182,18 @@ public List<ConsultaEntity> getConsultaList() {
                 addErrorMessage("Médico não encontrado!");
                 return null;
             }
+            
+            PlanoSaudeEntity plano = planoSaudeFacade.find(planoIdSelecionado);
+            if (plano == null) {
+                addErrorMessage("Plano de saúde não encontrado!");
+                return null;
+            }
+
 
             // Configura a consulta
             consulta.setPaciente(paciente);
             consulta.setMedico(medico);
+            consulta.setPlano(plano);
 
             // Valida data
             if (consulta.getDataHoraAsDate() == null) {
@@ -155,6 +214,7 @@ public List<ConsultaEntity> getConsultaList() {
             pacienteIdSelecionado = null;
             medicoIdSelecionado = null;
             consultaList = null;
+            planoIdSelecionado = null;
 
             // Redireciona para evitar reenvio ao atualizar
             return "consulta?faces-redirect=true";
@@ -167,7 +227,6 @@ public List<ConsultaEntity> getConsultaList() {
         }
     }
 
-    
     public String editarConsulta() {
         FacesContext context = FacesContext.getCurrentInstance();
         
@@ -204,34 +263,50 @@ public List<ConsultaEntity> getConsultaList() {
             }
             selected.setMedico(medico);
             
-            // 4. Validar data/hora
+            // 4. Validar plano de saúde
+            if (planoIdSelecionado == null) {
+                addErrorMessage("Selecione um plano de saúde válido!");
+                return null;
+            }
+            
+            PlanoSaudeEntity plano = planoSaudeFacade.find(planoIdSelecionado);
+            if (plano == null) {
+                addErrorMessage("Plano de saúde não encontrado com ID: " + planoIdSelecionado);
+                return null;
+            }
+            
+            
+            selected.setPlano(plano);
+            
+            // 5. Validar data/hora
             if (selected.getDataHoraAsDate() == null) {
                 addErrorMessage("Data/hora da consulta é obrigatória!");
                 return null;
             }
             
-            // 5. Atualizar timestamp
+            // 6. Atualizar timestamp
             selected.setDataHora(new Timestamp(selected.getDataHoraAsDate().getTime()));
             
-            // 6. Validar status
+            // 7. Validar status
             if (selected.getStatus() == null || selected.getStatus().isEmpty()) {
                 selected.setStatus("Agendada");
             }
             
-            // 7. Persistir
+            // 8. Persistir
             ejbFacade.edit(selected);
             
             // Configura mensagem para mostrar após redirecionamento
             context.getExternalContext().getFlash().setKeepMessages(true);
             addSuccessMessage("Consulta atualizada com sucesso!");
             
-            // 8. Limpar estado
+            // 9. Limpar estado
             selected = null;
             pacienteIdSelecionado = null;
             medicoIdSelecionado = null;
+            planoIdSelecionado = null;
             consultaList = null;
             
-            // 9. Redirecionar para evitar reenvio ao atualizar
+            // 10. Redirecionar para evitar reenvio ao atualizar
             return "consulta?faces-redirect=true";
             
         } catch (EJBException ejbEx) {
@@ -247,7 +322,6 @@ public List<ConsultaEntity> getConsultaList() {
             return null;
         }
     }
-
 
     public void confirmarConsulta() {
         if (selected != null && "Agendada".equals(selected.getStatus())) {
@@ -305,11 +379,16 @@ public List<ConsultaEntity> getConsultaList() {
                             addErrorMessage("Médico não foi selecionado!");
                             return;
                         }
+                        if (consulta.getPlano()== null) {
+                            addErrorMessage("Plano de saúde não foi selecionado!");
+                            return;
+                        }
                         
                         ejbFacade.createReturn(consulta);
                         consulta = new ConsultaEntity();
                         pacienteIdSelecionado = null;
                         medicoIdSelecionado = null;
+                        planoIdSelecionado = null;
                         consultaList = null;
                         break;
                         
@@ -323,6 +402,7 @@ public List<ConsultaEntity> getConsultaList() {
                         selected = null;
                         pacienteIdSelecionado = null;
                         medicoIdSelecionado = null;
+                        planoIdSelecionado = null;
                         consultaList = null;
                         break;
                         
@@ -336,6 +416,7 @@ public List<ConsultaEntity> getConsultaList() {
                         selected = null;
                         pacienteIdSelecionado = null;
                         medicoIdSelecionado = null;
+                        planoIdSelecionado = null;
                         consultaList = null;
                         break;
                 }
@@ -359,175 +440,218 @@ public List<ConsultaEntity> getConsultaList() {
             addErrorMessage("Erro na operação: " + ex.getLocalizedMessage());
         }
     }
-    
 
-
-// Métodos para o Dashboard
-public List<ConsultaEntity> getConsultasHoje() {
-    if (consultasHoje == null) {
-        carregarConsultasHoje();
+    // Métodos para o Dashboard
+    public List<ConsultaEntity> getConsultasHoje() {
+        if (consultasHoje == null) {
+            carregarConsultasHoje();
+        }
+        return consultasHoje;
     }
-    return consultasHoje;
-}
 
-public void carregarConsultasHoje() {
-    try {
-        // Busca todas as consultas
-        List<ConsultaEntity> todasConsultas = ejbFacade.buscarTodos();
+    public void carregarConsultasHoje() {
+        try {
+            // Busca todas as consultas
+            List<ConsultaEntity> todasConsultas = ejbFacade.buscarTodos();
+            
+            // Data de hoje
+            LocalDate hoje = LocalDate.now();
+            
+            // Filtra apenas as consultas de hoje
+            consultasHoje = todasConsultas.stream()
+                .filter(consulta -> {
+                    if (consulta.getDataHoraAsDate() != null) {
+                        LocalDate dataConsulta = consulta.getDataHoraAsDate()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                        return dataConsulta.equals(hoje);
+                    }
+                    return false;
+                })
+                .sorted((c1, c2) -> {
+                    // Ordena por horário
+                    if (c1.getDataHoraAsDate() != null && c2.getDataHoraAsDate() != null) {
+                        return c1.getDataHoraAsDate().compareTo(c2.getDataHoraAsDate());
+                    }
+                    return 0;
+                })
+                .collect(Collectors.toList());
+                
+            // Atualiza estatísticas
+            atualizarEstatisticas();
+            
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar consultas de hoje: " + e.getMessage());
+            e.printStackTrace();
+            consultasHoje = new ArrayList<>();
+        }
+    }
+
+    private void atualizarEstatisticas() {
+        // Total de consultas hoje
+        totalConsultasHoje = consultasHoje != null ? consultasHoje.size() : 0;
         
-        // Data de hoje
-        LocalDate hoje = LocalDate.now();
-        
-        // Filtra apenas as consultas de hoje
-        consultasHoje = todasConsultas.stream()
-            .filter(consulta -> {
+        // Próxima consulta (primeira consulta não realizada do dia)
+        proximaConsulta = null;
+        if (consultasHoje != null && !consultasHoje.isEmpty()) {
+            LocalDateTime agora = LocalDateTime.now();
+            
+            for (ConsultaEntity consulta : consultasHoje) {
                 if (consulta.getDataHoraAsDate() != null) {
-                    LocalDate dataConsulta = consulta.getDataHoraAsDate()
+                    LocalDateTime dataHoraConsulta = consulta.getDataHoraAsDate()
                         .toInstant()
                         .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
-                    return dataConsulta.equals(hoje);
-                }
-                return false;
-            })
-            .sorted((c1, c2) -> {
-                // Ordena por horário
-                if (c1.getDataHoraAsDate() != null && c2.getDataHoraAsDate() != null) {
-                    return c1.getDataHoraAsDate().compareTo(c2.getDataHoraAsDate());
-                }
-                return 0;
-            })
-            .collect(Collectors.toList());
-            
-        // Atualiza estatísticas
-        atualizarEstatisticas();
-        
-    } catch (Exception e) {
-        System.err.println("Erro ao carregar consultas de hoje: " + e.getMessage());
-        e.printStackTrace();
-        consultasHoje = new ArrayList<>();
-    }
-}
-
-private void atualizarEstatisticas() {
-    // Total de consultas hoje
-    totalConsultasHoje = consultasHoje != null ? consultasHoje.size() : 0;
-    
-    // Próxima consulta (primeira consulta não realizada do dia)
-    proximaConsulta = null;
-    if (consultasHoje != null && !consultasHoje.isEmpty()) {
-        LocalDateTime agora = LocalDateTime.now();
-        
-        for (ConsultaEntity consulta : consultasHoje) {
-            if (consulta.getDataHoraAsDate() != null) {
-                LocalDateTime dataHoraConsulta = consulta.getDataHoraAsDate()
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-                
-                // Verifica se a consulta ainda não aconteceu e não foi cancelada
-                if (dataHoraConsulta.isAfter(agora) && 
-                    !"Cancelada".equals(consulta.getStatus()) &&
-                    !"Realizada".equals(consulta.getStatus())) {
-                    proximaConsulta = consulta;
-                    break;
+                        .toLocalDateTime();
+                    
+                    // Verifica se a consulta ainda não aconteceu e não foi cancelada
+                    if (dataHoraConsulta.isAfter(agora) && 
+                        !"Cancelada".equals(consulta.getStatus()) &&
+                        !"Realizada".equals(consulta.getStatus())) {
+                        proximaConsulta = consulta;
+                        break;
+                    }
                 }
             }
         }
-    }
-    
-    // Total de pacientes (você pode implementar uma busca específica se necessário)
-    try {
-        List<PacienteEntity> pacientes = pacienteFacade.buscarTodos();
-        totalPacientes = pacientes != null ? pacientes.size() : 0;
-    } catch (Exception e) {
-        System.err.println("Erro ao buscar total de pacientes: " + e.getMessage());
-        totalPacientes = 0;
-    }
-}
-
-// Getters para as estatísticas
-public int getTotalConsultasHoje() {
-    if (consultasHoje == null) {
-        carregarConsultasHoje();
-    }
-    return totalConsultasHoje;
-}
-
-public int getTotalPacientes() {
-    if (consultasHoje == null) {
-        carregarConsultasHoje();
-    }
-    return totalPacientes;
-}
-
-public ConsultaEntity getProximaConsulta() {
-    if (consultasHoje == null) {
-        carregarConsultasHoje();
-    }
-    return proximaConsulta;
-}
-
-// Métodos auxiliares para formatação na tela
-public String getProximaConsultaHorario() {
-    if (proximaConsulta != null && proximaConsulta.getDataHoraAsDate() != null) {
-        LocalDateTime dataHora = proximaConsulta.getDataHoraAsDate()
-            .toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime();
         
-        return String.format("%02d:%02d", dataHora.getHour(), dataHora.getMinute());
+        // Total de pacientes
+        try {
+            List<PacienteEntity> pacientes = pacienteFacade.buscarTodos();
+            totalPacientes = pacientes != null ? pacientes.size() : 0;
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar total de pacientes: " + e.getMessage());
+            totalPacientes = 0;
+        }
     }
-    return "--:--";
-}
 
-public String getProximaConsultaDescricao() {
-    if (proximaConsulta != null && proximaConsulta.getPaciente() != null) {
-        String nomePaciente = proximaConsulta.getPaciente().getNome();
-        String especialidade = "Consulta";
+    // Getters para as estatísticas
+    public int getTotalConsultasHoje() {
+        if (consultasHoje == null) {
+            carregarConsultasHoje();
+        }
+        return totalConsultasHoje;
+    }
+
+    public int getTotalPacientes() {
+        if (consultasHoje == null) {
+            carregarConsultasHoje();
+        }
+        return totalPacientes;
+    }
+
+    public ConsultaEntity getProximaConsulta() {
+        if (consultasHoje == null) {
+            carregarConsultasHoje();
+        }
+        return proximaConsulta;
+    }
+
+    // Métodos auxiliares para formatação na tela
+    public String getProximaConsultaHorario() {
+        if (proximaConsulta != null && proximaConsulta.getDataHoraAsDate() != null) {
+            LocalDateTime dataHora = proximaConsulta.getDataHoraAsDate()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+            
+            return String.format("%02d:%02d", dataHora.getHour(), dataHora.getMinute());
+        }
+        return "--:--";
+    }
+
+    public String getProximaConsultaDescricao() {
+        if (proximaConsulta != null && proximaConsulta.getPaciente() != null) {
+            String nomePaciente = proximaConsulta.getPaciente().getNome();
+            String especialidade = "Consulta";
+            
+            if (proximaConsulta.getMedico() != null && 
+                proximaConsulta.getMedico().getIdEspecialidade() != null) {
+                especialidade = proximaConsulta.getMedico().getIdEspecialidade().getDescricao();
+            }
+            
+            return nomePaciente + " - " + especialidade;
+        }
+        return "Nenhuma consulta agendada";
+    }
+
+    public String formatarHorarioConsulta(ConsultaEntity consulta) {
+        if (consulta != null && consulta.getDataHoraAsDate() != null) {
+            LocalDateTime dataHora = consulta.getDataHoraAsDate()
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+            
+            return String.format("%02d:%02d", dataHora.getHour(), dataHora.getMinute());
+        }
+        return "--:--";
+    }
+
+    public String getStatusClass(String status) {
+        if (status == null) return "status-pending";
         
-        if (proximaConsulta.getMedico() != null && 
-            proximaConsulta.getMedico().getIdEspecialidade() != null) {
-            especialidade = proximaConsulta.getMedico().getIdEspecialidade().getDescricao();
+        switch (status.toLowerCase()) {
+            case "confirmada":
+            case "confirmado":
+                return "status-confirmed";
+            case "agendada":
+            case "agendado":
+                return "status-scheduled";
+            case "pendente":
+                return "status-pending";
+            default:
+                return "status-pending";
+        }
+    }
+
+    // Método para forçar atualização dos dados (útil para chamadas AJAX)
+    public void atualizarDashboard() {
+        consultasHoje = null;
+        carregarConsultasHoje();
+    }
+
+    // Métodos adicionais para relatórios por plano de saúde
+    public List<ConsultaEntity> getConsultasPorPlano(Long planoId) {
+        if (planoId == null) {
+            return new ArrayList<>();
         }
         
-        return nomePaciente + " - " + especialidade;
+        try {
+            return ejbFacade.buscarTodos().stream()
+                    .filter(consulta -> consulta.getPlano() != null && 
+                                      consulta.getPlano().getId().equals(planoId))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar consultas por plano: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
-    return "Nenhuma consulta agendada";
-}
 
-public String formatarHorarioConsulta(ConsultaEntity consulta) {
-    if (consulta != null && consulta.getDataHoraAsDate() != null) {
-        LocalDateTime dataHora = consulta.getDataHoraAsDate()
-            .toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime();
+    public int getTotalConsultasPorPlano(Long planoId) {
+        return getConsultasPorPlano(planoId).size();
+    }
+
+    public List<ConsultaEntity> getConsultasPorPlanoEPeriodo(Long planoId, Date dataInicio, Date dataFim) {
+        if (planoId == null || dataInicio == null || dataFim == null) {
+            return new ArrayList<>();
+        }
         
-        return String.format("%02d:%02d", dataHora.getHour(), dataHora.getMinute());
+        try {
+            return ejbFacade.buscarTodos().stream()
+                    .filter(consulta -> {
+                        if (consulta.getPlano() == null || 
+                            !consulta.getPlano().getId().equals(planoId) ||
+                            consulta.getDataHoraAsDate() == null) {
+                            return false;
+                        }
+                        
+                        Date dataConsulta = consulta.getDataHoraAsDate();
+                        return !dataConsulta.before(dataInicio) && !dataConsulta.after(dataFim);
+                    })
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar consultas por plano e período: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
-    return "--:--";
-}
-
-public String getStatusClass(String status) {
-    if (status == null) return "status-pending";
-    
-    switch (status.toLowerCase()) {
-        case "confirmada":
-        case "confirmado":
-            return "status-confirmed";
-        case "agendada":
-        case "agendado":
-            return "status-scheduled";
-        case "pendente":
-            return "status-pending";
-        default:
-            return "status-pending";
-    }
-}
-
-// Método para forçar atualização dos dados (útil para chamadas AJAX)
-public void atualizarDashboard() {
-    consultasHoje = null;
-    carregarConsultasHoje();
-}
 }

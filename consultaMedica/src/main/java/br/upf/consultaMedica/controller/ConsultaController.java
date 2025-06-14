@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+
 @Named(value = "consultaController")
 @SessionScoped
 public class ConsultaController implements Serializable {
@@ -55,8 +56,32 @@ public class ConsultaController implements Serializable {
     private int totalPacientes;
     private ConsultaEntity proximaConsulta;
     private Long planoIdSelecionado;
+    
+    private Date dataInicio;
+private Date dataFim;
+private String statusFiltro;
+private List<ConsultaEntity> consultasFiltradas;
 
-    // Getters e Setters
+private String nomePacienteFiltro;
+private String cpfPacienteFiltro;
+
+// Getters e Setters
+public String getNomePacienteFiltro() {
+    return nomePacienteFiltro;
+}
+
+public void setNomePacienteFiltro(String nomePacienteFiltro) {
+    this.nomePacienteFiltro = nomePacienteFiltro;
+}
+
+public String getCpfPacienteFiltro() {
+    return cpfPacienteFiltro;
+}
+
+public void setCpfPacienteFiltro(String cpfPacienteFiltro) {
+    this.cpfPacienteFiltro = cpfPacienteFiltro;
+}
+
     public Integer getPacienteIdSelecionado() {
         return pacienteIdSelecionado;
     }
@@ -664,51 +689,99 @@ private boolean validarMedicoSelecionado(Integer medicoId) {
         consultasHoje = null;
         carregarConsultasHoje();
     }
-
-    // Métodos adicionais para relatórios por plano de saúde
-    public List<ConsultaEntity> getConsultasPorPlano(Long planoId) {
-        if (planoId == null) {
-            return new ArrayList<>();
-        }
-        
-        try {
-            return ejbFacade.buscarTodos().stream()
-                    .filter(consulta -> consulta.getPlano() != null && 
-                                      consulta.getPlano().getId().equals(planoId))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            System.err.println("Erro ao buscar consultas por plano: " + e.getMessage());
-            return new ArrayList<>();
-        }
-    }
-
-    public int getTotalConsultasPorPlano(Long planoId) {
-        return getConsultasPorPlano(planoId).size();
-    }
-
-    public List<ConsultaEntity> getConsultasPorPlanoEPeriodo(Long planoId, Date dataInicio, Date dataFim) {
-        if (planoId == null || dataInicio == null || dataFim == null) {
-            return new ArrayList<>();
-        }
-        
-        try {
-            return ejbFacade.buscarTodos().stream()
-                    .filter(consulta -> {
-                        if (consulta.getPlano() == null || 
-                            !consulta.getPlano().getId().equals(planoId) ||
-                            consulta.getDataHoraAsDate() == null) {
-                            return false;
-                        }
-                        
-                        Date dataConsulta = consulta.getDataHoraAsDate();
-                        return !dataConsulta.before(dataInicio) && !dataConsulta.after(dataFim);
-                    })
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            System.err.println("Erro ao buscar consultas por plano e período: " + e.getMessage());
-            return new ArrayList<>();
-        }
-    }
     
+    public Date getDataInicio() {
+    return dataInicio;
+}
+
+public void setDataInicio(Date dataInicio) {
+    this.dataInicio = dataInicio;
+}
+
+public Date getDataFim() {
+    return dataFim;
+}
+
+public void setDataFim(Date dataFim) {
+    this.dataFim = dataFim;
+}
+
+public String getStatusFiltro() {
+    return statusFiltro;
+}
+
+public void setStatusFiltro(String statusFiltro) {
+    this.statusFiltro = statusFiltro;
+}
+
+public List<ConsultaEntity> getConsultasFiltradas() {
+    return consultasFiltradas;
+}
+
+public void setConsultasFiltradas(List<ConsultaEntity> consultasFiltradas) {
+    this.consultasFiltradas = consultasFiltradas;
+}
+
+// Método para filtrar consultas
+public void filtrarConsultas() {
+    try {
+        List<ConsultaEntity> todasConsultas = ejbFacade.buscarTodos();
+        
+        consultasFiltradas = todasConsultas.stream()
+            .filter(consulta -> {
+                // Filtro por nome do paciente (ignorando case e verificando se contém)
+                if (nomePacienteFiltro != null && !nomePacienteFiltro.isEmpty()) {
+                    if (consulta.getPaciente() == null || consulta.getPaciente().getNome() == null) {
+                        return false;
+                    }
+                    return consulta.getPaciente().getNome().toLowerCase()
+                            .contains(nomePacienteFiltro.toLowerCase());
+                }
+                return true;
+            })
+            .filter(consulta -> {
+                // Filtro por CPF do paciente (verificando se contém)
+                if (cpfPacienteFiltro != null && !cpfPacienteFiltro.isEmpty()) {
+                    if (consulta.getPaciente() == null || consulta.getPaciente().getCpf() == null) {
+                        return false;
+                    }
+                    return consulta.getPaciente().getCpf().contains(cpfPacienteFiltro);
+                }
+                return true;
+            })
+            .filter(consulta -> {
+                // Filtro por data
+                if (dataInicio != null && dataFim != null) {
+                    if (consulta.getDataHoraAsDate() == null) return false;
+                    return !consulta.getDataHoraAsDate().before(dataInicio) && 
+                           !consulta.getDataHoraAsDate().after(dataFim);
+                }
+                return true;
+            })
+            .filter(consulta -> {
+                // Filtro por status
+                if (statusFiltro != null && !statusFiltro.isEmpty()) {
+                    return consulta.getStatus() != null && 
+                           consulta.getStatus().equalsIgnoreCase(statusFiltro);
+                }
+                return true;
+            })
+            .collect(Collectors.toList());
+        
+    } catch (Exception e) {
+        System.err.println("Erro ao filtrar consultas: " + e.getMessage());
+        consultasFiltradas = new ArrayList<>();
+    }
+}
+
+// Método para limpar filtros
+public void limparFiltros() {
+    dataInicio = null;
+    dataFim = null;
+    statusFiltro = null;
+    nomePacienteFiltro = null;
+    cpfPacienteFiltro = null;
+    consultasFiltradas = null;
+}
     
 }

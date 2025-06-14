@@ -54,6 +54,23 @@ public class UsuarioController implements Serializable {
         return usuario;
     }
 
+    // NOVO MÉTODO - Preparar para edição
+    public void prepareEditar() {
+        if (selected != null) {
+            // Copiar os dados do selected para o usuario
+            usuario = new UsuarioEntity();
+            usuario.setCod(selected.getCod());
+            usuario.setNome(selected.getNome());
+            usuario.setDtaNascimento(selected.getDtaNascimento());
+            usuario.setSenha(selected.getSenha());
+
+            // Copiar os campos que estavam com problema na edição
+            usuario.setIdFuncao(selected.getIdFuncao());
+            usuario.setIdEspecialidade(selected.getIdEspecialidade());
+            usuario.setCrm(selected.getCrm());
+        }
+    }
+
     public void adicionarUsuario() {
         // senha baseada na data de nascimento no formato ddMMyyyy
         if (usuario.getDtaNascimento() != null) {
@@ -96,7 +113,8 @@ public class UsuarioController implements Serializable {
                         ejbFacade.createReturn(usuario);
                         break;
                     case UPDATE:
-                        ejbFacade.edit(selected);
+                        // CORREÇÃO: usar 'usuario' em vez de 'selected'
+                        ejbFacade.edit(usuario);
                         selected = null;
                         break;
                     case DELETE:
@@ -121,5 +139,5 @@ public class UsuarioController implements Serializable {
             addErrorMessage(ex.getLocalizedMessage());
         }
     }
-    
+
 }

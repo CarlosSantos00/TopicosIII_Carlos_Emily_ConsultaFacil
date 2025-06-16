@@ -37,6 +37,19 @@ public class UsuarioFacade extends AbstractFacade<UsuarioEntity> {
         }
         return entityList;
     }
+    
+        public List<UsuarioEntity> buscarTodosMedicos() {
+        entityList = new ArrayList<>();
+        try {
+            Query query = getEntityManager().createQuery("SELECT u FROM UsuarioEntity u WHERE u.idFuncao.id = 3 ORDER BY u.nome");
+            if (!query.getResultList().isEmpty()) {
+                entityList = (List<UsuarioEntity>) query.getResultList();
+            }
+        } catch (Exception e) {
+            System.out.println("Erro: " + e);
+        }
+        return entityList;
+    }
 
     public UsuarioEntity buscarPorEmailESenha(String email, String senha) {
         UsuarioEntity usuario = null;

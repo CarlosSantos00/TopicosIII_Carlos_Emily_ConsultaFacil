@@ -44,6 +44,10 @@ public class UsuarioController implements Serializable {
     public List<UsuarioEntity> getUsuarioList() {
         return ejbFacade.buscarTodos();
     }
+    
+        public List<UsuarioEntity> getMedicoList() {
+        return ejbFacade.buscarTodosMedicos();
+    }
 
     public void setUsuarioList(List<UsuarioEntity> usuarioList) {
         this.usuarioList = usuarioList;

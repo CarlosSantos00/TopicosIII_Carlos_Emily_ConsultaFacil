@@ -91,7 +91,7 @@
 
                         <f:facet name="footer">
                             <p:commandButton id="btnCreate" value="Nova Consulta" icon="pi pi-plus" 
-                                             action="#{consultaController.prepareAdicionar()}"
+                                             actionListener="#{consultaController.prepareAdicionar()}"
                                              update=":CreateForm"
                                              oncomplete="PF('dlgCreate').show()" style="margin-right: 10px;"/>  
 
@@ -168,7 +168,7 @@
                                          required="true" requiredMessage="O médico é obrigatório"
                                          style="width:150%" filter="true" filterMatchMode="contains">
                             <f:selectItem itemLabel="Selecione o médico..." itemValue="" noSelectionOption="true"/>
-                            <f:selectItems value="#{usuarioController.usuarioList}" 
+                            <f:selectItems value="#{usuarioController.medicoList}" 
                                            var="medico" 
                                            itemLabel="#{medico.nome} - #{medico.idEspecialidade.descricao}" 
                                            itemValue="#{medico.cod}"/>
